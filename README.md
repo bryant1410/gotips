@@ -65,6 +65,8 @@ Some APIs are designed with context interface, google search is an example. Use 
 	fmt.Printf("Done")
 ```
 
+<script src="https://gist.github.com/beyondns/8240d598117798a5a102.js"></script>
+
 * [blog.golang.org/context](https://blog.golang.org/context)
 * [blog.golang.org/context/server/server.go](https://blog.golang.org/context/server/server.go)
 
