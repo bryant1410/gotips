@@ -16,6 +16,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 # Tips list
 
+- 18 - [Use for range for channels](https://github.com/beyondns/gotips#18---use-for-range-for-channels)
 - 17 - [Use context API](https://github.com/beyondns/gotips#17---use-context-api)
 - 16 - [Go routines syncronization](https://github.com/beyondns/gotips#16---go-routines-syncronization)
 - 15 - [Time interval measurement](https://github.com/beyondns/gotips#15---time-interval-measurement)
@@ -34,6 +35,73 @@ Make PR add new tip on top of list with title, date, description, code and links
 -  2 - [Import packages](https://github.com/beyondns/gotips#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
+
+## #18 - Use for range for channels 
+> 2016-17-02 by [@beyondns](https://github.com/beyondns)
+
+
+```go
+const N = 3
+
+func main() {
+	ch := make(chan int, N)
+	d := make(chan struct{})
+	
+	// use for range 
+	go func() {
+		for i := range ch {
+			fmt.Printf("get %d\n", i)
+		}
+		fmt.Println("get done")
+		close(d)
+	}()
+
+	// use for
+	/*
+	go func() {
+		c := 0
+		for c < N {
+			fmt.Printf("get %d\n", <-ch)
+			c++
+		}
+		fmt.Println("get done")
+		close(d)
+	}()
+	*/
+
+	// use for select
+	/*
+	go func() {
+		c := 0
+		for c < N {
+			select {
+			case <-time.After(time.Second):
+				panic("time out")
+			case i := <-ch:
+				c++
+				fmt.Printf("get %d\n", i)
+			}
+		}
+		fmt.Println("get done")
+		close(d)
+	}()
+	*/
+
+	go func() {
+		for i := 0; i < N; i++ {
+			ch <- i
+		}
+		close(ch)
+		fmt.Println("put done")
+	}()
+	time.Sleep(time.Microsecond)
+	<-d
+	fmt.Println("main done")
+}
+
+```
+* [github.com/valyala/fasthttp/blob/master/workerpool.go](https://github.com/valyala/fasthttp/blob/master/workerpool.go#L191)
+
 
 ## #17 - Use context API
 > 2016-16-02 by [@beyondns](https://github.com/beyondns)
@@ -64,8 +132,6 @@ Some APIs are designed with context interface, google search is an example. Use 
 	}	
 	fmt.Printf("Done")
 ```
-
-<script src="https://gist.github.com/beyondns/8240d598117798a5a102.js"></script>
 
 * [blog.golang.org/context](https://blog.golang.org/context)
 * [blog.golang.org/context/server/server.go](https://blog.golang.org/context/server/server.go)
