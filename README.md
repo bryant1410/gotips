@@ -64,7 +64,6 @@ Some APIs are designed with context interface, google search is an example. Use 
 	}	
 	fmt.Printf("Done")
 ```
-{% gist 8240d598117798a5a102 %}
 
 * [blog.golang.org/context](https://blog.golang.org/context)
 * [blog.golang.org/context/server/server.go](https://blog.golang.org/context/server/server.go)
