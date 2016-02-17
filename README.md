@@ -100,7 +100,7 @@ func main() {
 }
 
 ```
-* [run](https://play.golang.org/p/t6t-ANNsJ)
+* [run](https://play.golang.org/p/t6t-ANNsJH)
 * [github.com/valyala/fasthttp/blob/master/workerpool.go](https://github.com/valyala/fasthttp/blob/master/workerpool.go#L191)
 
 
