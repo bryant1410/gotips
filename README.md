@@ -16,6 +16,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 # Tips list
 
+- 19 - [Chanked HTTP response with flusher](https://github.com/beyondns/gotips#19---chanked-http-response-with-flusher)
 - 18 - [Use for range for channels](https://github.com/beyondns/gotips#18---use-for-range-for-channels)
 - 17 - [Use context API](https://github.com/beyondns/gotips#17---use-context-api)
 - 16 - [Go routines syncronization](https://github.com/beyondns/gotips#16---go-routines-syncronization)
@@ -35,6 +36,61 @@ Make PR add new tip on top of list with title, date, description, code and links
 -  2 - [Import packages](https://github.com/beyondns/gotips#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
+
+
+## #19 - Chanked HTTP response with flusher 
+> 2016-18-02 by [@beyondns](https://github.com/beyondns)
+
+```go
+type Forever struct{}
+
+func (s *Forever) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
+
+	closeNotify := w.(http.CloseNotifier).CloseNotify()
+	flusher := w.(http.Flusher)
+
+	w.WriteHeader(http.StatusOK)
+	flusher.Flush()
+	for {
+		select {
+		case <-closeNotify:
+			return
+		case <-time.After(3 * time.Second):
+			fmt.Fprintf(w, "%v\n", time.Now())
+			flusher.Flush()
+		}
+	}
+
+}
+
+func main() {
+	p := flag.String("port", "8000", "port")
+	flag.Parse()
+	log.Fatal(http.ListenAndServe(":"+(*p), &Forever{}))
+}
+
+```
+
+```bash
+curl -v http://localhost:8000/
+*   Trying 127.0.0.1...
+* Connected to localhost (127.0.0.1) port 8000 (#0)
+> GET / HTTP/1.1
+> Host: localhost:8000
+> User-Agent: curl/7.46.0
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Date: Thu, 18 Feb 2016 13:08:29 GMT
+< Content-Type: text/plain; charset=utf-8
+< Transfer-Encoding: chunked
+< 
+2016-02-18 16:08:32.482807768 +0300 MSK
+2016-02-18 16:08:35.483426765 +0300 MSK
+2016-02-18 16:08:38.484006772 +0300 MSK
+
+```
 
 ## #18 - Use for range for channels 
 > 2016-17-02 by [@beyondns](https://github.com/beyondns)
