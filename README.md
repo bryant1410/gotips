@@ -16,7 +16,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 # Tips list
 
-- 19 - [Chanked HTTP response with flusher](https://github.com/beyondns/gotips#19---chanked-http-response-with-flusher)
+- 19 - [Chunked HTTP response with flusher](https://github.com/beyondns/gotips#19---chunked-http-response-with-flusher)
 - 18 - [Use for range for channels](https://github.com/beyondns/gotips#18---use-for-range-for-channels)
 - 17 - [Use context API](https://github.com/beyondns/gotips#17---use-context-api)
 - 16 - [Go routines syncronization](https://github.com/beyondns/gotips#16---go-routines-syncronization)
@@ -38,7 +38,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
 
 
-## #19 - Chanked HTTP response with flusher 
+## #19 - Chunked HTTP response with flusher 
 > 2016-18-02 by [@beyondns](https://github.com/beyondns)
 
 ```go
