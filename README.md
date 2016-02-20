@@ -16,6 +16,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 # Tips list
 
+- 20 - [Use Atomics or GOMAXPROCS=1](https://github.com/beyondns/gotips#20---use-atomics-or-gomaxprocs=1)
 - 19 - [Chunked HTTP response with flusher](https://github.com/beyondns/gotips#19---chunked-http-response-with-flusher)
 - 18 - [Use for range for channels](https://github.com/beyondns/gotips#18---use-for-range-for-channels)
 - 17 - [Use context API](https://github.com/beyondns/gotips#17---use-context-api)
@@ -37,6 +38,81 @@ Make PR add new tip on top of list with title, date, description, code and links
 -  1 - [Map](https://github.com/beyondns/gotips#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
 
+
+## #20 - Use Atomics or GOMAXPROCS=1
+> 2016-18-02 by [@beyondns](https://github.com/beyondns)
+
+
+```go
+import (
+	"fmt"
+	"runtime"
+	"sync"
+	"sync/atomic"
+	"testing"
+)
+
+func BenchmarkLock(b *testing.B) {
+	var l sync.RWMutex
+	var counter uint32 = 0
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	b.ReportAllocs()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			l.Lock()
+			counter++
+			l.Unlock()
+		}
+	})
+	fmt.Printf("counter = %d\n", counter)
+}
+
+func BenchmarkAtomic(b *testing.B) {
+	var counter uint32 = 0
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	b.ReportAllocs()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			atomic.AddUint32(&counter, 1)
+		}
+	})
+	fmt.Printf("counter = %d\n", counter)
+}
+
+func BenchmarkX(b *testing.B) {
+	var counter uint32 = 0
+	runtime.GOMAXPROCS(1)
+	b.ReportAllocs()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			counter++
+		}
+	})
+	fmt.Printf("counter = %d\n", counter)
+}
+
+```
+
+```bash
+BenchmarkLock-2  	counter = 1
+counter = 100
+counter = 10000
+counter = 1000000
+counter = 5000000
+ 5000000	       261 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAtomic-2	counter = 1
+counter = 100
+counter = 10000
+counter = 1000000
+counter = 50000000
+50000000	        35.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkX-2     	counter = 1
+counter = 100
+counter = 10000
+counter = 1000000
+counter = 50000000
+50000000	        35.5 ns/op	       0 B/op	       0 allocs/op
+```
 
 ## #19 - Chunked HTTP response with flusher 
 > 2016-18-02 by [@beyondns](https://github.com/beyondns)
