@@ -16,7 +16,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 # Tips list
 
-- 20 - [Use Atomics or GOMAXPROCS=1](https://github.com/beyondns/gotips#20---use-atomics-or-gomaxprocs=1)
+- 20 - [Use Atomics or GOMAXPROCS=1](https://github.com/beyondns/gotips#20---use-atomics-or-gomaxprocs1)
 - 19 - [Chunked HTTP response with flusher](https://github.com/beyondns/gotips#19---chunked-http-response-with-flusher)
 - 18 - [Use for range for channels](https://github.com/beyondns/gotips#18---use-for-range-for-channels)
 - 17 - [Use context API](https://github.com/beyondns/gotips#17---use-context-api)
