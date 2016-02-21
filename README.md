@@ -16,6 +16,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 # Tips list
 
+- 21 - [Test bench http request handler](https://github.com/beyondns/gotips#21---test-bench-http-request-handler)
 - 20 - [Use Atomics or GOMAXPROCS=1](https://github.com/beyondns/gotips#20---use-atomics-or-gomaxprocs1)
 - 19 - [Chunked HTTP response with flusher](https://github.com/beyondns/gotips#19---chunked-http-response-with-flusher)
 - 18 - [Use for range for channels](https://github.com/beyondns/gotips#18---use-for-range-for-channels)
@@ -38,6 +39,77 @@ Make PR add new tip on top of list with title, date, description, code and links
 -  1 - [Map](https://github.com/beyondns/gotips#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
 
+## #21 - Test bench http request handler
+> 2016-21-02 by [@beyondns](https://github.com/beyondns)
+
+
+server.go
+```go
+package main
+
+import (
+	"log"
+	"net/http"
+)
+
+func handleHttpRq(w http.ResponseWriter, r *http.Request) {
+	//	log.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Write([]byte("Hello world"))
+}
+
+func main() {
+	http.HandleFunc("/struct", handleHttpRq)
+	log.Fatal(http.ListenAndServe("127.0.0.1:8000", nil))
+}
+
+```
+
+server_test.go
+```go
+package main
+
+import (
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
+
+const host = "http://127.0.0.1:8000/"
+
+func TestHandleStructAdd(t *testing.T) {
+
+	req, err := http.NewRequest("GET", host, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rw := httptest.NewRecorder()
+
+	handleHttpRq(rw, req)
+
+	if rw.Code == 500 {
+		t.Fatal("Internal server Error: " + rw.Body.String())
+	}
+	if rw.Body.String() != "Hello world" {
+		t.Fatal("Expected " + rw.Body.String())
+	}
+
+}
+
+func BenchmarkHandleStructAdd(b *testing.B) {
+	req, err := http.NewRequest("GET", host, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+	for i := 0; i < b.N; i++ {
+		rw := httptest.NewRecorder()
+		handleHttpRq(rw, req)
+	}
+
+}
+```
+* [Daily code optimization](https://medium.com/@hackintoshrao/daily-code-optimization-using-benchmarks-and-profiling-in-golang-gophercon-india-2016-talk-874c8b4dc3c5#.bh2vh8tjf)
 
 ## #20 - Use Atomics or GOMAXPROCS=1
 > 2016-18-02 by [@beyondns](https://github.com/beyondns)
@@ -660,6 +732,9 @@ JS Client
 
 * [websocket](golang.org/x/net/websocket)
 
+
+Brad Fitzpatrick ‏@bradfitz  Feb 19 Bengaluru, India
+@activedaily the http2 working group forgot about websockets until the last second when it was too late. WS requires http1. Lame.
 
 ## #10 - HTTP2
 > 2016-07-02 by [@beyondns](https://github.com/beyondns)
