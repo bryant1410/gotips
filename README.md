@@ -16,6 +16,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 # Tips list
 
+- 22 - [Any number of args](https://github.com/beyondns/gotips#22---any-number-of-args)
 - 21 - [Test bench http request handler](https://github.com/beyondns/gotips#21---test-bench-http-request-handler)
 - 20 - [Use Atomics or GOMAXPROCS=1](https://github.com/beyondns/gotips#20---use-atomics-or-gomaxprocs1)
 - 19 - [Chunked HTTP response with flusher](https://github.com/beyondns/gotips#19---chunked-http-response-with-flusher)
@@ -38,6 +39,24 @@ Make PR add new tip on top of list with title, date, description, code and links
 -  2 - [Import packages](https://github.com/beyondns/gotips#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
+
+## #22 - Any number of args
+> 2016-23-02 by [@beyondns](https://github.com/beyondns)
+
+```go
+func f(args ...string) []string {
+         var r []string
+         for _, s := range args {
+                 r = append(r, s)
+         }
+         return r
+}
+
+func main(){
+	fmt.Prinln(f("alpha","beta","gama")) // ["alpha","beta","gama"]
+}
+```
+* [golang-accept-any-number-of-function-arguments-with-three-dots](https://socketloop.com/tutorials/golang-accept-any-number-of-function-arguments-with-three-dots)
 
 ## #21 - Test bench http request handler
 > 2016-21-02 by [@beyondns](https://github.com/beyondns)
