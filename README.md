@@ -77,7 +77,7 @@ import (
 
 const host = "http://127.0.0.1:8000/"
 
-func TestHandleStructAdd(t *testing.T) {
+func TestRequest(t *testing.T) {
 
 	req, err := http.NewRequest("GET", host, nil)
 	if err != nil {
@@ -97,7 +97,7 @@ func TestHandleStructAdd(t *testing.T) {
 
 }
 
-func BenchmarkHandleStructAdd(b *testing.B) {
+func BenchmarkRequest(b *testing.B) {
 	req, err := http.NewRequest("GET", host, nil)
 	if err != nil {
 		b.Fatal(err)
