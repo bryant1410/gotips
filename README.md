@@ -16,6 +16,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 # Tips list
 
+- 23 - [Defer is slow](https://github.com/beyondns/gotips#23---defer-is-slow)
 - 22 - [Any number of args](https://github.com/beyondns/gotips#22---any-number-of-args)
 - 21 - [Test bench http request handler](https://github.com/beyondns/gotips#21---test-bench-http-request-handler)
 - 20 - [Use Atomics or GOMAXPROCS=1](https://github.com/beyondns/gotips#20---use-atomics-or-gomaxprocs1)
@@ -39,6 +40,74 @@ Make PR add new tip on top of list with title, date, description, code and links
 -  2 - [Import packages](https://github.com/beyondns/gotips#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
+
+
+## #23 - Defer is slow
+> 2016-25-02 by [@beyondns](https://github.com/beyondns)
+
+```go
+import (
+	"fmt"
+	"runtime"
+	"sync"
+	"testing"
+)
+
+func doF(v *uint32, l *sync.RWMutex) {
+	(*l).Lock()
+	(*v)++
+	(*l).Unlock()
+}
+
+func doFD(v *uint32, l *sync.RWMutex) {
+	(*l).Lock()
+	defer (*l).Unlock()
+	(*v)++
+}
+
+func BenchmarkLockDefer(b *testing.B) {
+	var l sync.RWMutex
+	var counter uint32 = 0
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			doFD(&counter, &l)
+		}
+	})
+	fmt.Printf("counter = %d\n", counter)
+}
+
+func BenchmarkLock(b *testing.B) {
+	var l sync.RWMutex
+	var counter uint32 = 0
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			doF(&counter, &l)
+		}
+	})
+	fmt.Printf("counter = %d\n", counter)
+}
+
+```
+
+```bash
+go test -bench=.
+
+BenchmarkLockDefer-2	counter = 1
+counter = 100
+counter = 10000
+counter = 1000000
+ 1000000	      1073 ns/op
+BenchmarkLock-2     	counter = 1
+counter = 100
+counter = 10000
+counter = 1000000
+counter = 5000000
+ 5000000	       249 ns/op
+```
+
+* [so-you-wanna-go-fast](http://bravenewgeek.com/so-you-wanna-go-fast/)
 
 ## #22 - Any number of args
 > 2016-23-02 by [@beyondns](https://github.com/beyondns)
