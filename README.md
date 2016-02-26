@@ -16,6 +16,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 # Tips list
 
+- 24 - [Slice shuffle](https://github.com/beyondns/gotips#24---slice-shuffle)
 - 23 - [Defer is slow](https://github.com/beyondns/gotips#23---defer-is-slow)
 - 22 - [Any number of args](https://github.com/beyondns/gotips#22---any-number-of-args)
 - 21 - [Test bench http request handler](https://github.com/beyondns/gotips#21---test-bench-http-request-handler)
@@ -41,6 +42,47 @@ Make PR add new tip on top of list with title, date, description, code and links
 -  1 - [Map](https://github.com/beyondns/gotips#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
 
+
+## #24 - Slice shuffle
+> 2016-26-02 by [@beyondns](https://github.com/beyondns)
+
+```go
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func shuffle(s []string) {
+	t0 := int64(time.Now().Nanosecond())
+	rand.Seed(t0)
+	fmt.Printf("%v", t0)
+
+	for i := len(s) - 1; i > 0; i-- {
+		j := rand.Intn(i + 1)
+		s[i], s[j] = s[j], s[i]
+	}
+}
+
+func main() {
+
+	s := []string{"a", "b", "c"}
+	for i := 0; i < 3; i++ {
+		shuffle(s)
+		fmt.Println(s)
+	}
+}
+
+```
+```bash
+go run shuffle.go 
+322916783[c a b]
+323220313[b a c]
+323351126[a c b]
+
+```
 
 ## #23 - Defer is slow
 > 2016-25-02 by [@beyondns](https://github.com/beyondns)
