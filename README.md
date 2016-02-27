@@ -534,6 +534,8 @@ DONE:
 ## #14 - Benchmark switch vs else if
 > 2016-14-02 by [@beyondns](https://github.com/beyondns)
 
+Switch vs else if no big difference
+
 ```go
 package boom
 
@@ -681,6 +683,18 @@ func BenchmarkIf(b *testing.B) {
 
 ```bash
 go test -bench=.
+
+BenchmarkSwitch-2	1 1
+24 100
+24 10000
+24 1000000
+ 1000000	      1203 ns/op
+BenchmarkIf-2    	1 1
+24 100
+24 10000
+24 1000000
+ 1000000	      1214 ns/op
+
 ```
 
 * [golang.org/pkg/testing/](https://golang.org/pkg/testing/)
