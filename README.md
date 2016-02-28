@@ -696,7 +696,7 @@ BenchmarkIf-2    	1 1
  1000000	      1214 ns/op
 
 ```
-
+* [making-switch-cool-again](http://elliot.land/making-switch-cool-again)
 * [golang.org/pkg/testing/](https://golang.org/pkg/testing/)
 * [github.com/golang/go/issues/10000](https://github.com/golang/go/issues/10000)
 
