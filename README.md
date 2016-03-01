@@ -189,7 +189,7 @@ func handleHttpRq(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/struct", handleHttpRq)
+	http.HandleFunc("/", handleHttpRq)
 	log.Fatal(http.ListenAndServe("127.0.0.1:8000", nil))
 }
 
