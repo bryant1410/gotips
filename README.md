@@ -1114,6 +1114,16 @@ func main() {
 If you don't need net/http package functionality just use net and "tcp"
 
 ```go
+package main
+
+import (
+	"flag"
+	//"fmt"
+	"io"
+	"log"
+	"net"
+	"sync"
+)
 
 func main() {
 
@@ -1123,14 +1133,11 @@ func main() {
 
 	l, err := net.Listen("tcp", *host)
 	if err != nil {
-		fmt.Println("Error listening:", err.Error())
-		os.Exit(1)
+		panic(err)
 	}
 
-	defer l.Close()
+	log.Printf("Listening on %s", *host)
 
-	fmt.Printf("Listening on %s\n", *host)
-	var i = 0
 	for {
 		conn, err := l.Accept()
 		if err != nil {
@@ -1142,18 +1149,30 @@ func main() {
 
 }
 
+var rp sync.Pool
+
 func handleRequest(c *net.Conn) {
-	defer (*c).Close()
-	buf := make([]byte, 2048) // tip: use preallocated
-	n, err := (*c).Read(buf)
-	if err != nil || n <= 0 {
-		return
+	var rb *[]byte
+	if v := rp.Get(); v != nil {
+		rb = v.(*[]byte)
+	} else {
+		rb = new([]byte)
+		*rb = make([]byte, 2048)
 	}
 
-	// parse http if necessary 
+	n, err := (*c).Read(*rb)
+	if err != nil || n <= 0 {
+		goto E
+	}
 
-	(*c).Write([]byte("HTTP/1.1 200 Ok\r\nConnection: close\r\nContent-Length: 5\r\n\r\nhello"))
+	// parse http if necessary
+
+	io.WriteString(*c, "HTTP/1.1 200 Ok\r\nConnection: close\r\nContent-Length: 5\r\n\r\nhello")
+E:
+	(*c).Close()
+
 }
+
 
 ```
 Just test it
