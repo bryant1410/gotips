@@ -16,6 +16,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 # Tips list
 
+- 25 - [Avoid conversions with hidden alloc copy](https://github.com/beyondns/gotips#25---avoid-conversions-with-hidden-alloc-copy)
 - 24 - [Slice shuffle](https://github.com/beyondns/gotips#24---slice-shuffle)
 - 23 - [Defer is slow](https://github.com/beyondns/gotips#23---defer-is-slow)
 - 22 - [Any number of args](https://github.com/beyondns/gotips#22---any-number-of-args)
@@ -41,6 +42,14 @@ Make PR add new tip on top of list with title, date, description, code and links
 -  2 - [Import packages](https://github.com/beyondns/gotips#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
+
+
+## #25 - Avoid conversions with hidden alloc copy
+> 2016-26-02 by [@beyondns](https://github.com/beyondns)
+Avoid []byte - string conversion, for example use io.WriteString(s) instead of Write([]byte(string))
+
+```go
+```
 
 
 ## #24 - Slice shuffle
