@@ -44,7 +44,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
 
 
-## #26 - Go channels is cool/bad but try lock-free
+## #26 - Go channels are cool/bad (slow) but try it yourself lock-free
 > 2016-03-03 by [@beyondns](https://github.com/beyondns)
 
 * [go-channels-are-bad-and-you-should-feel-bad](http://www.jtolds.com/writing/2016/03/go-channels-are-bad-and-you-should-feel-bad/)
