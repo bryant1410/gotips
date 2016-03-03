@@ -44,8 +44,13 @@ Make PR add new tip on top of list with title, date, description, code and links
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
 
 
+## #26 - Go channels is cool/bad but try lock-free
+> 2016-03-03 by [@beyondns](https://github.com/beyondns)
+
+* [go-channels-are-bad-and-you-should-feel-bad](http://www.jtolds.com/writing/2016/03/go-channels-are-bad-and-you-should-feel-bad/)
+
 ## #25 - Avoid conversions with hidden alloc copy
-> 2016-26-02 by [@beyondns](https://github.com/beyondns)
+> 2016-03-03 by [@beyondns](https://github.com/beyondns)
 Avoid []byte - string conversion, for example use io.WriteString(s) instead of Write([]byte(string))
 
 ```go
