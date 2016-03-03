@@ -16,6 +16,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 # Tips list
 
+- 26 - [Go channels are slow try it yourself lock-free](https://github.com/beyondns/gotips#26---go-channels-are-slow-try-it-yourself-lock-free)
 - 25 - [Avoid conversions with hidden alloc copy](https://github.com/beyondns/gotips#25---avoid-conversions-with-hidden-alloc-copy)
 - 24 - [Slice shuffle](https://github.com/beyondns/gotips#24---slice-shuffle)
 - 23 - [Defer is slow](https://github.com/beyondns/gotips#23---defer-is-slow)
@@ -44,7 +45,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
 
 
-## #26 - Go channels are cool/bad (slow) but try it yourself lock-free
+## #26 - Go channels are slow try it yourself lock-free
 > 2016-03-03 by [@beyondns](https://github.com/beyondns)
 
 * [go-channels-are-bad-and-you-should-feel-bad](http://www.jtolds.com/writing/2016/03/go-channels-are-bad-and-you-should-feel-bad/)
