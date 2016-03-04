@@ -16,6 +16,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 # Tips list
 
+- 27 - [Go-style concurrency in C](https://github.com/beyondns/gotips#26---go-style-concurrency-in-c)
 - 26 - [Go channels are slow try it yourself lock-free](https://github.com/beyondns/gotips#26---go-channels-are-slow-try-it-yourself-lock-free)
 - 25 - [Avoid conversions with hidden alloc copy](https://github.com/beyondns/gotips#25---avoid-conversions-with-hidden-alloc-copy)
 - 24 - [Slice shuffle](https://github.com/beyondns/gotips#24---slice-shuffle)
@@ -45,11 +46,22 @@ Make PR add new tip on top of list with title, date, description, code and links
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
 
 
+## #27 - Go-style concurrency in C
+> 2016-04-03 by [@beyondns](https://github.com/beyondns)
+
+```go
+```
+
+* [libmill](https://github.com/sustrik/libmill)
+
 ## #26 - Go channels are slow try it yourself lock-free
 > 2016-03-03 by [@beyondns](https://github.com/beyondns)
 
+```go
+```
+
 * [go-channels-are-bad-and-you-should-feel-bad](http://www.jtolds.com/writing/2016/03/go-channels-are-bad-and-you-should-feel-bad/)
-* [To solve the multiple producer problem](https://github.com/golang/go/issues/14601)
+* [proposal: improve channels for M:N producer/consumer scenarios](https://github.com/golang/go/issues/14601)
 
 ## #25 - Avoid conversions with hidden alloc copy
 > 2016-03-03 by [@beyondns](https://github.com/beyondns)
