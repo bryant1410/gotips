@@ -57,6 +57,8 @@ Make PR add new tip on top of list with title, date, description, code and links
 * [go-channels-are-bad-and-you-should-feel-bad](http://www.jtolds.com/writing/2016/03/go-channels-are-bad-and-you-should-feel-bad/)
 * [proposal: improve channels for M:N producer/consumer scenarios](https://github.com/golang/go/issues/14601)
 
+* [libconcurrent](https://github.com/sharow/libconcurrent)
+
 ## #25 - Avoid conversions with hidden alloc copy
 > 2016-03-03 by [@beyondns](https://github.com/beyondns)
 Avoid []byte - string conversion, for example use io.WriteString(s) instead of Write([]byte(string))
