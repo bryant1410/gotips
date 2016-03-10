@@ -172,7 +172,8 @@ func main() {
 * [proposal: improve channels for M:N producer/consumer scenarios](https://github.com/golang/go/issues/14601)
 
 ## #25 - Avoid conversions with hidden alloc copy
-> 2016-03-03 by [@beyondns](https://github.com/beyondns)
+> 2016-03-03 by [@beyondns](https://github.com/beyondns)  
+
 Avoid []byte - string conversion, for example use io.WriteString(s) instead of Write([]byte(string))
 
 
