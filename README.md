@@ -48,6 +48,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 ## #28 - Interact with etcd with http.Request 
 > 2016-10-03 by [@beyondns](https://github.com/beyondns)  
+
 Don't use [client](https://github.com/coreos/etcd/tree/master/client) but use http.Request to get more control.  
 
 Place WAL to ramdisk to save HDD (development mode only) 
