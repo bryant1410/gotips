@@ -16,6 +16,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 # Tips list
 
+- 28 - [Interact with etcd with http.Request](https://github.com/beyondns/gotips#27---interact-with-etcd-with-httprequest)
 - 27 - [Go-style concurrency in C](https://github.com/beyondns/gotips#27---go-style-concurrency-in-c)
 - 26 - [Go channels are slow try it yourself lock-free](https://github.com/beyondns/gotips#26---go-channels-are-slow-try-it-yourself-lock-free)
 - 25 - [Avoid conversions with hidden alloc copy](https://github.com/beyondns/gotips#25---avoid-conversions-with-hidden-alloc-copy)
