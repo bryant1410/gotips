@@ -16,7 +16,7 @@ Make PR add new tip on top of list with title, date, description, code and links
 
 # Tips list
 
-- 28 - [Interact with etcd with http.Request](https://github.com/beyondns/gotips#27---interact-with-etcd-with-httprequest)
+- 28 - [Interact with etcd with http.Request](https://github.com/beyondns/gotips#28---interact-with-etcd-with-httprequest)
 - 27 - [Go-style concurrency in C](https://github.com/beyondns/gotips#27---go-style-concurrency-in-c)
 - 26 - [Go channels are slow try it yourself lock-free](https://github.com/beyondns/gotips#26---go-channels-are-slow-try-it-yourself-lock-free)
 - 25 - [Avoid conversions with hidden alloc copy](https://github.com/beyondns/gotips#25---avoid-conversions-with-hidden-alloc-copy)
@@ -65,7 +65,6 @@ import (
 	"errors"
 	"log"
 	"time"
-	"io"
 	"io/ioutil"
 	"strings"
 	"net/http"
@@ -75,7 +74,7 @@ var (
 	etcdKeys = "http://127.0.0.1:2379/v2/keys/"
 )
 
-func httpRequest(meth, url, val string) (int,[]byte, error) {
+func httpRequest(meth, u, val string) (int,[]byte, error) {
 
 	tr := &http.Transport{}
 	client := &http.Client{Transport: tr}
@@ -84,14 +83,12 @@ func httpRequest(meth, url, val string) (int,[]byte, error) {
 	var respStatus int
 	var respBody []byte
 
-	var br io.Reader = nil
-	if val != "" {
-		br = strings.NewReader(val)
-	}
-	req, err := http.NewRequest(meth, url, br)
+	req, err := http.NewRequest(meth, u, strings.NewReader(val))
 	if err != nil {
 		return 0,nil, err
 	}
+
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	go func() {
 		resp, err := client.Do(req)
@@ -129,11 +126,12 @@ func httpRequest(meth, url, val string) (int,[]byte, error) {
 
 }
 
+
 //curl -L -X PUT http://127.0.0.1:2379/v2/keys/message -d value="Hello"
 //{"action":"set","node":{"key":"/message","value":"Hello","modifiedIndex":4,"createdIndex":4}}
 
 func etcdSet(k, v string) (int,[]byte, error) {
-	return httpRequest("PUT", etcdKeys+k, "value=Hello")
+	return httpRequest("PUT", etcdKeys+k, "value="+v)
 }
 
 
