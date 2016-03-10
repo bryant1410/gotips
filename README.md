@@ -45,6 +45,119 @@ Make PR add new tip on top of list with title, date, description, code and links
 -  1 - [Map](https://github.com/beyondns/gotips#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
 
+## #28 - Interact with etcd with http.Request 
+> 2016-10-03 by [@beyondns](https://github.com/beyondns)
+Don't use [client](https://github.com/coreos/etcd/tree/master/client) but use http.Request to get more control.  
+
+Place WAL to ramdisk to save HDD (development mode only) 
+```bash
+sudo mkdir /mnt/ramdisk/
+sudo mount -t tmpfs -o size=32M tmpfs /mnt/ramdisk/
+etcd --wal-dir /mnt/ramdisk
+```
+
+```go
+package main
+
+import (
+	"errors"
+	"log"
+	"time"
+	"io"
+	"io/ioutil"
+	"strings"
+	"net/http"
+)
+
+var (
+	etcdKeys = "http://127.0.0.1:2379/v2/keys/"
+)
+
+func httpRequest(meth, url, val string) (int,[]byte, error) {
+
+	tr := &http.Transport{}
+	client := &http.Client{Transport: tr}
+	c := make(chan error, 1)
+
+	var respStatus int
+	var respBody []byte
+
+	var br io.Reader = nil
+	if val != "" {
+		br = strings.NewReader(val)
+	}
+	req, err := http.NewRequest(meth, url, br)
+	if err != nil {
+		return 0,nil, err
+	}
+
+	go func() {
+		resp, err := client.Do(req)
+
+		if err != nil {
+			goto E
+		}
+
+		respStatus = resp.StatusCode
+
+		respBody, err = ioutil.ReadAll(resp.Body)
+		if err != nil {
+			goto E
+		}
+	E:
+		c <- err
+		if resp != nil && resp.Body != nil {
+			resp.Body.Close()
+		}
+	}()
+
+	select {
+	case <-time.After(time.Second * 10):
+		tr.CancelRequest(req)
+		log.Printf("Request timeout")
+		<-c // Wait for goroutine to return.
+		return 0,nil, errors.New("request time out")
+	case err := <-c:
+		if err != nil {
+			log.Printf("Error in request goroutine %v", err)
+			return 0,nil, err
+		}
+		return respStatus,respBody, nil
+	}
+
+}
+
+//curl -L -X PUT http://127.0.0.1:2379/v2/keys/message -d value="Hello"
+//{"action":"set","node":{"key":"/message","value":"Hello","modifiedIndex":4,"createdIndex":4}}
+
+func etcdSet(k, v string) (int,[]byte, error) {
+	return httpRequest("PUT", etcdKeys+k, "value=Hello")
+}
+
+
+//curl -L http://127.0.0.1:2379/v2/keys/message
+//{"action":"get","node":{"key":"/message","value":"Hello","modifiedIndex":4,"createdIndex":4}}
+
+func etcdGet(k string) (int,[]byte, error) {
+	return httpRequest("GET", etcdKeys+k, "")
+}
+
+func main() {
+	s,d, err := etcdSet("foo", "bar")
+	if err != nil {
+		log.Fatalf("etcdSet error %v", err)
+	}
+	log.Printf("set %d %s",s,string(d))
+	s, d, err = etcdGet("foo")
+	if err != nil {
+		log.Fatalf("etcdGet error %v", err)
+	}
+	log.Printf("get %d %s",s,string(d))
+}
+
+```
+* [getting-started-with-etcd](https://coreos.com/etcd/docs/latest/getting-started-with-etcd.html)
+* [api](https://github.com/coreos/etcd/blob/master/Documentation/api.md)
 
 ## #27 - Go-style concurrency in C
 > 2016-04-03 by [@beyondns](https://github.com/beyondns)
