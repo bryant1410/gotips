@@ -8,11 +8,14 @@ This list of short golang code tips & trics will help keep collected knowledge i
 
 Please feel free to send a PR with your own Golang tip to be published here. Any improvements or suggestions are welcome!  
 
-> Contributing
+> Don't forget to Star the repo
 
-Make PR add new tip on top of list with title, date, description, code and links, please see tips as a reference.
+This will help to promote the project!
 
-> Don't forget to Star the repo, as this will help to promote the project!
+> **Have a project, I'm here for you!**
+
+You can hire me to implement almost any software just drop an email to beyondnanosecond@gmail.com
+
 
 # Tips list
 
