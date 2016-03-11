@@ -54,7 +54,7 @@ You can hire me to implement almost any software just drop an email to beyondnan
 
 Don't use [client](https://github.com/coreos/etcd/tree/master/client) but use http.Request to get more control.  
 
-Place WAL to ramdisk to save HDD (development mode only) 
+Place WAL to ramdisk to save HDD from very frequet writes (development mode only) 
 ```bash
 sudo mkdir /mnt/ramdisk/
 sudo mount -t tmpfs -o size=32M tmpfs /mnt/ramdisk/
@@ -71,6 +71,10 @@ import (
 	"io/ioutil"
 	"strings"
 	"net/http"
+)
+
+const (
+	ResponseWaitTimeLimit = time.Second*10
 )
 
 var (
@@ -91,7 +95,9 @@ func httpRequest(meth, u, val string) (int,[]byte, error) {
 		return 0,nil, err
 	}
 
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	if val!=""{
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	}
 
 	go func() {
 		resp, err := client.Do(req)
@@ -103,9 +109,6 @@ func httpRequest(meth, u, val string) (int,[]byte, error) {
 		respStatus = resp.StatusCode
 
 		respBody, err = ioutil.ReadAll(resp.Body)
-		if err != nil {
-			goto E
-		}
 	E:
 		c <- err
 		if resp != nil && resp.Body != nil {
@@ -114,7 +117,7 @@ func httpRequest(meth, u, val string) (int,[]byte, error) {
 	}()
 
 	select {
-	case <-time.After(time.Second * 10):
+	case <-time.After(ResponseWaitTimeLimit):
 		tr.CancelRequest(req)
 		log.Printf("Request timeout")
 		<-c // Wait for goroutine to return.
@@ -145,19 +148,41 @@ func etcdGet(k string) (int,[]byte, error) {
 	return httpRequest("GET", etcdKeys+k, "")
 }
 
+// curl -L http://127.0.0.1:2379/v2/keys/foo-service?wait=true\&recursive=true
+func etcdWait(k string) (int,[]byte, error) {
+	return httpRequest("GET", etcdKeys+k+"?wait=true", "")
+}
+
 func main() {
+	
+	c:=make(chan bool)
+
+	go func(){
+
+	s,d, err := etcdWait("foo")
+	if err != nil {
+		log.Fatalf("etcdWait error %v", err)
+	}
+	log.Printf("wait %d %s",s,string(d))
+
+	c<-true
+	}()
+
+
 	s,d, err := etcdSet("foo", "bar")
 	if err != nil {
 		log.Fatalf("etcdSet error %v", err)
 	}
 	log.Printf("set %d %s",s,string(d))
+
 	s, d, err = etcdGet("foo")
 	if err != nil {
 		log.Fatalf("etcdGet error %v", err)
 	}
 	log.Printf("get %d %s",s,string(d))
-}
 
+	<-c
+}
 ```
 * [getting-started-with-etcd](https://coreos.com/etcd/docs/latest/getting-started-with-etcd.html)
 * [api](https://github.com/coreos/etcd/blob/master/Documentation/api.md)
@@ -173,6 +198,7 @@ func main() {
 
 * [go-channels-are-bad-and-you-should-feel-bad](http://www.jtolds.com/writing/2016/03/go-channels-are-bad-and-you-should-feel-bad/)
 * [proposal: improve channels for M:N producer/consumer scenarios](https://github.com/golang/go/issues/14601)
+* [github.com/eapache/channels](https://github.com/eapache/channels)
 
 ## #25 - Avoid conversions with hidden alloc copy
 > 2016-03-03 by [@beyondns](https://github.com/beyondns)  
