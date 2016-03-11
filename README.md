@@ -81,7 +81,7 @@ var (
 	etcdKeys = "http://127.0.0.1:2379/v2/keys/"
 )
 
-func httpRequest(meth, u, val string) (int,[]byte, error) {
+func httpRequest(meth, u, val string, timeLimit time.Duration) (int,[]byte, error) {
 
 	tr := &http.Transport{}
 	client := &http.Client{Transport: tr}
@@ -117,7 +117,7 @@ func httpRequest(meth, u, val string) (int,[]byte, error) {
 	}()
 
 	select {
-	case <-time.After(ResponseWaitTimeLimit):
+	case <-time.After(timeLimit):
 		tr.CancelRequest(req)
 		log.Printf("Request timeout")
 		<-c // Wait for goroutine to return.
@@ -137,7 +137,7 @@ func httpRequest(meth, u, val string) (int,[]byte, error) {
 //{"action":"set","node":{"key":"/message","value":"Hello","modifiedIndex":4,"createdIndex":4}}
 
 func etcdSet(k, v string) (int,[]byte, error) {
-	return httpRequest("PUT", etcdKeys+k, "value="+v)
+	return httpRequest("PUT", etcdKeys+k, "value="+v, time.Second)
 }
 
 
@@ -145,12 +145,12 @@ func etcdSet(k, v string) (int,[]byte, error) {
 //{"action":"get","node":{"key":"/message","value":"Hello","modifiedIndex":4,"createdIndex":4}}
 
 func etcdGet(k string) (int,[]byte, error) {
-	return httpRequest("GET", etcdKeys+k, "")
+	return httpRequest("GET", etcdKeys+k, "", time.Second)
 }
 
 // curl -L http://127.0.0.1:2379/v2/keys/foo-service?wait=true\&recursive=true
 func etcdWait(k string) (int,[]byte, error) {
-	return httpRequest("GET", etcdKeys+k+"?wait=true", "")
+	return httpRequest("GET", etcdKeys+k+"?wait=true", "", time.Second*3600)
 }
 
 func main() {
@@ -183,6 +183,7 @@ func main() {
 
 	<-c
 }
+
 ```
 * [getting-started-with-etcd](https://coreos.com/etcd/docs/latest/getting-started-with-etcd.html)
 * [api](https://github.com/coreos/etcd/blob/master/Documentation/api.md)
