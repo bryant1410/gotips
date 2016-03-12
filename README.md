@@ -154,32 +154,33 @@ func etcdWait(k string) (int,[]byte, error) {
 }
 
 func main() {
-	
-	c:=make(chan bool)
 
-	go func(){
+	c := make(chan bool)
 
-	s,d, err := etcdWait("foo")
-	if err != nil {
-		log.Fatalf("etcdWait error %v", err)
-	}
-	log.Printf("wait %d %s",s,string(d))
+	go func() {
 
-	c<-true
+		s, d, err := etcdWait("foo")
+		if err != nil {
+			log.Fatalf("etcdWait error %v", err)
+		}
+		log.Printf("wait %d %s", s, string(d))
+
+		c <- true
 	}()
 
+	time.Sleep(time.Second) // wait etcdWait 
 
-	s,d, err := etcdSet("foo", "bar")
+	s, d, err := etcdSet("foo", "bar")
 	if err != nil {
 		log.Fatalf("etcdSet error %v", err)
 	}
-	log.Printf("set %d %s",s,string(d))
+	log.Printf("set %d %s", s, string(d))
 
 	s, d, err = etcdGet("foo")
 	if err != nil {
 		log.Fatalf("etcdGet error %v", err)
 	}
-	log.Printf("get %d %s",s,string(d))
+	log.Printf("get %d %s", s, string(d))
 
 	<-c
 }
