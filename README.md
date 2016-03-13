@@ -19,7 +19,7 @@ You can hire me to implement almost any software just drop an email to beyondnan
 
 # Tips list
 
-- 29 - [Partial json read](https://github.com/beyondns/gotips#28---partial-json-read)
+- 29 - [Partial json read](https://github.com/beyondns/gotips#29---partial-json-read)
 - 28 - [Interact with etcd with http.Request](https://github.com/beyondns/gotips#28---interact-with-etcd-with-httprequest)
 - 27 - [Go-style concurrency in C](https://github.com/beyondns/gotips#27---go-style-concurrency-in-c)
 - 26 - [Go channels are slow try it yourself lock-free](https://github.com/beyondns/gotips#26---go-channels-are-slow-try-it-yourself-lock-free)
