@@ -19,6 +19,7 @@ You can hire me to implement almost any software just drop an email to beyondnan
 
 # Tips list
 
+- 29 - [Partial json read](https://github.com/beyondns/gotips#28---partial-json-read)
 - 28 - [Interact with etcd with http.Request](https://github.com/beyondns/gotips#28---interact-with-etcd-with-httprequest)
 - 27 - [Go-style concurrency in C](https://github.com/beyondns/gotips#27---go-style-concurrency-in-c)
 - 26 - [Go channels are slow try it yourself lock-free](https://github.com/beyondns/gotips#26---go-channels-are-slow-try-it-yourself-lock-free)
@@ -48,6 +49,105 @@ You can hire me to implement almost any software just drop an email to beyondnan
 -  2 - [Import packages](https://github.com/beyondns/gotips#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
+
+
+## #29 - Partial json read 
+> 2016-10-03 by [@beyondns](https://github.com/beyondns)  
+
+Use only fields you need in json struct for faster parsing
+
+```go
+package main
+
+import (
+	"math/rand"
+	"encoding/json"
+	"testing"
+)
+
+var (
+
+jsonData  = []string{`
+{
+	"id":123123123,
+	"name":"hero",
+	"bigdata":{
+		"a" : "wejjhkajshdfkjsahgfhasdkjhfaskd",
+		"b" : "ajndajsdbkjsadhfgajsdfhasdghags",
+		"c" : "asdnmkcakdlaksdkaskdlakdkakdass" 
+	}
+}
+`,
+`
+{
+	"id":0695096,
+	"name":"warrior",
+	"bigdata":{
+		"a" : "sjdnkjsbfvkjdsbfvkjdfb",
+		"b" : "snvdsfnvdfnv,dnfvdnfnvdfnv,dnfv,d",
+		"c" : "dcsfdcbmndfbvcndbfvdbfmvb" 
+	}
+}
+`,
+`
+{
+	"id":3823233,
+	"name":"superman",
+	"bigdata":{
+		"a" : "qnqw,neqw,enq,wenq,wen",
+		"b" : "snvdsfnvdfnv,dnfvdnfnvdfnv,dnfv,d",
+		"c" : "dcvnfmvnd,vgn,n" 
+	}
+}
+`,
+}
+)
+
+type BigData struct{
+	A string `json:"a"`
+	B string `json:"b"`
+	C string `json:"c"`
+
+}
+
+type DataFull struct {
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+	BD BigData  `json:"bigdata"`
+}
+
+func BenchmarkFullJson(b *testing.B) {
+	rand.Seed(376234242)
+    for i := 0; i < b.N; i++ {
+        var d DataFull
+        j := rand.Intn(len(jsonData))
+		json.Unmarshal([]byte(jsonData[j]), &d)
+    }    
+}
+
+type DataShort struct {
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
+func BenchmarkShortJson(b *testing.B) {
+	rand.Seed(376234242)
+    for i := 0; i < b.N; i++ {
+        var d DataShort
+        j := rand.Intn(len(jsonData))
+		json.Unmarshal([]byte(jsonData[j]), &d)
+    }    
+}
+```
+```bash
+go test -bench=.
+testing: warning: no tests to run
+PASS
+BenchmarkFullJson-2 	   50000	     34626 ns/op
+BenchmarkShortJson-2	   50000	     24630 ns/op
+```
+
+*[using-golang-and-json-for-kafka-consumption-with-high-throughput](https://medium.com/the-hoard/using-golang-and-json-for-kafka-consumption-with-high-throughput-4cae28e08f90)
 
 ## #28 - Interact with etcd with http.Request 
 > 2016-10-03 by [@beyondns](https://github.com/beyondns)  
