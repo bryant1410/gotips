@@ -54,7 +54,7 @@ You can hire me to implement almost any software just drop an email to beyondnan
 ## #29 - Partial json read 
 > 2016-10-03 by [@beyondns](https://github.com/beyondns)  
 
-Use only fields you need in json struct for faster parsing
+Use only fields you need in json struct for faster parsing. Use json:"-" to exclude field.
 
 ```go
 package main
@@ -63,6 +63,7 @@ import (
 	"math/rand"
 	"encoding/json"
 	"testing"
+	"fmt"
 )
 
 var (
@@ -128,7 +129,19 @@ func BenchmarkFullJson(b *testing.B) {
 type DataShort struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`
+	//BD BigData  `json:"-"`
 }
+
+func TestData(t *testing.T) {
+    var ds DataShort
+	json.Unmarshal([]byte(jsonData[0]), &ds)
+	//ds.BD.A="a"
+	fmt.Printf("%v\n",ds)
+    var df DataFull
+	json.Unmarshal([]byte(jsonData[0]), &df)
+	fmt.Printf("%v\n",df)
+}
+
 
 func BenchmarkShortJson(b *testing.B) {
 	rand.Seed(376234242)
