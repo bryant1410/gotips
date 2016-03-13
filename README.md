@@ -12,9 +12,9 @@ Please feel free to send a PR with your own Golang tip to be published here. Any
 
 This will help to promote the project!
 
-> **Have a project, I'm here for you!**
+> **Have a project?**
 
-You can hire me to implement almost any software just drop an email to beyondnanosecond@gmail.com
+You can hire just drop an email to beyondnanosecond@gmail.com
 
 
 # Tips list
@@ -52,7 +52,7 @@ You can hire me to implement almost any software just drop an email to beyondnan
 
 
 ## #29 - Partial json read 
-> 2016-10-03 by [@beyondns](https://github.com/beyondns)  
+> 2016-13-03 by [@beyondns](https://github.com/beyondns)  
 
 Use only fields you need in json struct for faster parsing. Use json:"-" to exclude field.
 
