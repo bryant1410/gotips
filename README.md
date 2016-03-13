@@ -147,7 +147,7 @@ BenchmarkFullJson-2 	   50000	     34626 ns/op
 BenchmarkShortJson-2	   50000	     24630 ns/op
 ```
 
-*[using-golang-and-json-for-kafka-consumption-with-high-throughput](https://medium.com/the-hoard/using-golang-and-json-for-kafka-consumption-with-high-throughput-4cae28e08f90)
+* [using-golang-and-json-for-kafka-consumption-with-high-throughput](https://medium.com/the-hoard/using-golang-and-json-for-kafka-consumption-with-high-throughput-4cae28e08f90)
 
 ## #28 - Interact with etcd with http.Request 
 > 2016-10-03 by [@beyondns](https://github.com/beyondns)  
