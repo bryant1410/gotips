@@ -19,6 +19,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 
 # Tips list
 
+- 30 - [Heart beat and lead election with etcd](https://github.com/beyondns/gotips#30---heart-beat-and-lead-election-with-etcd)
 - 29 - [Partial json read](https://github.com/beyondns/gotips#29---partial-json-read)
 - 28 - [Interact with etcd with http.Request](https://github.com/beyondns/gotips#28---interact-with-etcd-with-httprequest)
 - 27 - [Go-style concurrency in C](https://github.com/beyondns/gotips#27---go-style-concurrency-in-c)
@@ -49,6 +50,228 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 -  2 - [Import packages](https://github.com/beyondns/gotips#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips#0---slices)
+
+
+## #30 - Heart beat and lead election with etcd 
+> 2016-13-03 by [@beyondns](https://github.com/beyondns)  
+
+Lead election is very simple with etcd just use prevExist and ttl params for concurent http api calls from different nodes.
+
+```go
+package main
+
+import (
+	"errors"
+	"flag"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"strings"
+	"time"
+	"math/rand"
+)
+
+var (
+	etcdKeys = "http://127.0.0.1:2379/v2/keys/"
+)
+
+func httpRequest(meth, u, val string, timeLimit time.Duration) (int, []byte, error) {
+
+	tr := &http.Transport{}
+	client := &http.Client{Transport: tr}
+	c := make(chan error, 1)
+
+	var respStatus int
+	var respBody []byte
+
+	req, err := http.NewRequest(meth, u, strings.NewReader(val))
+	if err != nil {
+		return 0, nil, err
+	}
+
+	if val != "" {
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	}
+
+	go func() {
+		resp, err := client.Do(req)
+
+		if err != nil {
+			goto E
+		}
+
+		respStatus = resp.StatusCode
+
+		respBody, err = ioutil.ReadAll(resp.Body)
+	E:
+		c <- err
+		if resp != nil && resp.Body != nil {
+			resp.Body.Close()
+		}
+	}()
+
+	select {
+	case <-time.After(timeLimit):
+		tr.CancelRequest(req)
+		log.Printf("Request timeout")
+		<-c // Wait for goroutine to return.
+		return 0, nil, errors.New("request time out")
+	case err := <-c:
+		if err != nil {
+			log.Printf("Error in request goroutine %v", err)
+			return 0, nil, err
+		}
+		return respStatus, respBody, nil
+	}
+
+}
+
+//curl -L -X PUT http://127.0.0.1:2379/v2/keys/message -d value="Hello"
+//{"action":"set","node":{"key":"/message","value":"Hello","modifiedIndex":4,"createdIndex":4}}
+
+func etcdSet(k, v string) (int, []byte, error) {
+	return httpRequest("PUT", etcdKeys+k, "value="+v, time.Second)
+}
+
+func etcdSetTTL(k, v string, ttl int) (int, []byte, error) {
+	return httpRequest("PUT", etcdKeys+k, fmt.Sprintf("value=%s&ttl=%d", v, ttl), time.Second)
+}
+
+func etcdSetIfNotExistsTTL(k, v string, ttl int) (int, []byte, error) {
+	return httpRequest("PUT", etcdKeys+k, fmt.Sprintf("value=%s&ttl=%d&prevExist=false", v, ttl), time.Second)
+}
+
+//curl -L http://127.0.0.1:2379/v2/keys/message
+//{"action":"get","node":{"key":"/message","value":"Hello","modifiedIndex":4,"createdIndex":4}}
+
+func etcdGet(k string) (int, []byte, error) {
+	return httpRequest("GET", etcdKeys+k, "", time.Second)
+}
+
+// curl -L http://127.0.0.1:2379/v2/keys/foo-service?wait=true\&recursive=true
+func etcdWait(k string) (int, []byte, error) {
+	return httpRequest("GET", etcdKeys+k+"?wait=true", "", time.Second*3600)
+}
+
+const (
+	HeartBeatInterval = time.Second * 5
+	LeadBeatInterval  = time.Second * 5
+	NodeTTL           = 10
+)
+
+type Node struct {
+	Name            string
+	URL             string
+	HeartBeatCancel chan struct{}
+	LeadBeatCancel  chan struct{}
+	ElectionCancel  chan struct{}
+}
+
+func NewNode(name, url string) *Node {
+	return &Node{
+		Name:            name,
+		URL:             url,
+		HeartBeatCancel: make(chan struct{},1),
+		LeadBeatCancel:  make(chan struct{},1),
+		ElectionCancel:  make(chan struct{},1),
+	}
+}
+
+func (n *Node) HeartBeat() {
+	for {
+		select {
+		case <-time.After(HeartBeatInterval):
+			log.Printf("node %s heart beat", n.Name)
+			etcdSetTTL("Nodes/"+n.Name, n.URL, NodeTTL)
+		case <-n.HeartBeatCancel:
+			log.Printf("node %s heart beat canceled", n.Name)
+			return
+		}
+	}
+}
+
+func (n *Node) LeadBeat() {
+	for {
+		select {
+		case <-time.After(LeadBeatInterval):
+			log.Printf("node %s lead beat", n.Name)
+			etcdSetTTL("Lead", n.URL, NodeTTL)
+		case <-n.LeadBeatCancel:
+			log.Printf("node %s lead beat canceled", n.Name)
+			return
+
+		}
+	}
+}
+
+func (n *Node) Election() {
+	for {
+		select {
+		case <-time.After(HeartBeatInterval):
+			s, _, err := etcdSetIfNotExistsTTL("Lead", n.URL, NodeTTL)
+			if err != nil {
+				log.Printf("node %s Election error %v", n.Name, err)
+				continue
+			}
+			if s == 201 {
+				log.Printf("node %s is new Lead", n.Name)
+				n.HeartBeatCancel <- struct{}{}
+				go n.LeadBeat()
+				return
+			}
+		case <-n.ElectionCancel:
+			log.Printf("node %s election canceled", n.Name)
+			return
+		}
+	}
+}
+
+func (n *Node) Kill() {
+	n.HeartBeatCancel <- struct{}{}
+	n.LeadBeatCancel <- struct{}{}
+	n.ElectionCancel <- struct{}{}
+}
+
+func (n *Node) Run() {
+	go n.HeartBeat()
+	go n.Election()
+}
+
+func main() {
+	h := flag.String("host", "127.0.0.1", "host")
+	p := flag.Int("port", 8000, "port")
+	flag.Parse()
+
+	var nodes []*Node
+
+	for i := 0; i < 3; i++ {
+		n := NewNode(fmt.Sprintf("node%d", i), fmt.Sprintf("%s:%d", *h, (*p)+i))
+		go n.Run()
+		nodes = append(nodes, n)
+	}
+	for {
+		select {
+		case <-time.After(time.Second * 15):
+			i := rand.Intn(len(nodes))
+			n := nodes[i]
+			name := n.Name
+			url := n.URL
+			log.Printf("Kill random node %s", name)
+			go n.Kill()
+
+			time.Sleep(time.Second)
+
+			n = NewNode(name, url)
+			go n.Run()
+			nodes[i] = n
+		}
+	}
+}
+```
+```bash
+
+```
 
 
 ## #29 - Partial json read 
