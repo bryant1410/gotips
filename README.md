@@ -19,7 +19,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 
 # Tips list
 
-- 31 - [Do not need any web framework](https://github.com/beyondns/gotips#30---do-not-need-any-web-framework)
+- 31 - [Do not need any web framework](https://github.com/beyondns/gotips#31---do-not-need-any-web-framework)
 - 30 - [Heart beat and lead election with etcd](https://github.com/beyondns/gotips#30---heart-beat-and-lead-election-with-etcd)
 - 29 - [Partial json read](https://github.com/beyondns/gotips#29---partial-json-read)
 - 28 - [Interact with etcd with http.Request](https://github.com/beyondns/gotips#28---interact-with-etcd-with-httprequest)
