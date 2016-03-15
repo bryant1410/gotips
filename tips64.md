@@ -90,13 +90,13 @@ func main() {
 
 	s, d, err := consulSet("foo", "bar")
 	if err != nil {
-		log.Fatalf("etcdSet error %v", err)
+		log.Fatalf("consulSet error %v", err)
 	}
 	log.Printf("set %d %s", s, string(d))
 
 	s, d, err = consulGet("foo")
 	if err != nil {
-		log.Fatalf("etcdGet error %v", err)
+		log.Fatalf("consulGet error %v", err)
 	}
 	log.Printf("get %d %s", s, string(d))
 
