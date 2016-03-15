@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"encoding/json"
 )
 
 var (
@@ -37,9 +38,6 @@ func httpRequest(meth, u, val string, timeLimit time.Duration) (int, []byte, err
 		return 0, nil, err
 	}
 
-	if val != "" {
-		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	}
 
 	go func() {
 		resp, err := client.Do(req)
@@ -86,19 +84,46 @@ func consulGet(k string) (int, []byte, error) {
 	return httpRequest("GET", consulKV+k, "", time.Second)
 }
 
+type KVPair struct {
+	Key         string
+	CreateIndex uint64
+	ModifyIndex uint64
+	LockIndex   uint64
+	Flags       uint64
+	Value       []byte
+	Session     string
+}
+
 func main() {
 
-	s, d, err := consulSet("foo", "bar")
+	s, d, err := consulSet("foo", "hero")
 	if err != nil {
-		log.Fatalf("consulSet error %v", err)
+		log.Fatalf("Set error %v", err)
 	}
 	log.Printf("set %d %s", s, string(d))
 
 	s, d, err = consulGet("foo")
 	if err != nil {
-		log.Fatalf("consulGet error %v", err)
+		log.Fatalf("Get error %v", err)
 	}
-	log.Printf("get %d %s", s, string(d))
+
+	if s!=200{
+		log.Fatalf("Get status %d", s)
+	}
+
+    var kv []KVPair	
+	json.Unmarshal(d,&kv)
+
+	if len(kv)==0{
+		log.Fatalf("len(kv)==0")
+	}
+
+	log.Printf("get %d %s %s", s, string(d), kv[0].Value)
 
 }
+```
+```bash
+2016/03/15 20:49:54 set 200 true
+2016/03/15 20:49:54 get 200 [{"LockIndex":0,"Key":"foo","Flags":0,"Value":"aGVybw==","CreateIndex":7,"ModifyIndex":252}] hero
+
 ```
