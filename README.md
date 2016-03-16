@@ -20,6 +20,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 # Tips list
 
 
+- 33 - [Table driven tests](https://github.com/beyondns/gotips/blob/master/tips64.md#32---table-driven-tests)
 - 32 - [Work with consul](https://github.com/beyondns/gotips/blob/master/tips64.md#32---work-with-consul)
 - 31 - [Do not need any web framework](https://github.com/beyondns/gotips/blob/master/tips32.md#31---do-not-need-any-web-framework)
 - 30 - [Heart beat and lead election with etcd](https://github.com/beyondns/gotips/blob/master/tips32.md#30---heart-beat-and-lead-election-with-etcd)

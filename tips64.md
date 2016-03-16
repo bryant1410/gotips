@@ -1,7 +1,45 @@
+## #33 - Table driven tests 
+> 2016-15-03 by [@beyondns](https://github.com/beyondns)  
+
+Table driven tests very simple but efficient. An example shamelessly stolen from [advanced-testing-with-go](https://speakerdeck.com/mitchellh/advanced-testing-with-go)
+
+```go
+package main
+
+import (
+	"testing"
+)
+
+func TestAdd(t *testing.T) {
+	cases := []struct{ A, B, Sum int }{
+		{1, 1, 2},
+		{1, -1, 0},
+		{1, 0, 1},
+		{0, 0, 0},
+		{3, 2, 1}, // error!!!
+	}
+
+	for _, c := range cases {
+		a := c.A + c.B
+		e := c.Sum
+		if a != e {
+			t.Errorf("%d + %d = %d, expected %d", c.A, c.B, a, e)
+		}
+	}
+
+}
+
+```
+```bash
+--- FAIL: TestAdd (0.00s)
+	tdt_test.go:20: 3 + 2 = 5, expected 1
+```
+* [advanced-testing-with-go](https://speakerdeck.com/mitchellh/advanced-testing-with-go)
+
 ## #32 - Work with consul 
 > 2016-14-03 by [@beyondns](https://github.com/beyondns)  
 
-[Consul](https://www.consul.io/) has its own [client](https://github.com/hashicorp/consul/tree/master/api) but just use net/http 
+[Consul](https://www.consul.io/) has its own [client](https://github.com/hashicorp/consul/tree/master/api) but just use net/http  
 
 ```bash
 consul agent -dev -advertise=127.0.0.1
@@ -19,6 +57,8 @@ import (
 	"time"
 	"encoding/json"
 )
+
+// https://www.consul.io/docs/agent/http/kv.html
 
 var (
 	consulKV = "http://127.0.0.1:8500/v1/kv/"
