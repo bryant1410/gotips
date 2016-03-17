@@ -225,6 +225,10 @@ func main() {
 
 ```
 
+
+[gotips #0..#31](https://github.com/beyondns/gotips/blob/master/tips32.md)
+
+
 ### General Golang links
 * [50 Shades of Go: Traps, Gotchas, and Common Mistakes for New Golang Devs](http://devs.cloudimmunity.com/gotchas-and-common-mistakes-in-go-golang/)
 
