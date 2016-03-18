@@ -1412,6 +1412,7 @@ HTTP2 client
 	fmt.Printf("%s\n", string(data))
 
 ```
+* [HTTP/2 and http2 in Go 1.6 vide by Brad Fitzpatrick](https://www.youtube.com/watch?v=FARQMJndUn0)
 * [h2demo](https://github.com/golang/net/blob/master/http2/h2demo)
 * [tools-for-debugging-testing-and-using-http-2](https://blog.cloudflare.com/tools-for-debugging-testing-and-using-http-2/)
 * [curl-with-http2-support](https://serversforhackers.com/video/curl-with-http2-support)
