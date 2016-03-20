@@ -20,6 +20,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 # Tips list
 
 
+- 34 - [File path exists](https://github.com/beyondns/gotips#34---file-path-exists)
 - 33 - [Table driven tests](https://github.com/beyondns/gotips#33---table-driven-tests)
 - 32 - [Work with consul](https://github.com/beyondns/gotips#32---work-with-consul)
 - 31 - [Do not need any web framework](https://github.com/beyondns/gotips/blob/master/tips32.md#31---do-not-need-any-web-framework)
@@ -54,6 +55,21 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+
+
+## #34 - File path exists 
+> 2016-15-03 by [@beyondns](https://github.com/beyondns)  
+
+```go
+if _, err := os.Stat(filepath); os.IsNotExist(err) {
+	// doesn't exist
+}
+
+if _, err := os.Stat(filepath); err == nil {
+	// exists
+}
+```
 
 ## #33 - Table driven tests 
 > 2016-15-03 by [@beyondns](https://github.com/beyondns)  
