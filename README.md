@@ -68,7 +68,7 @@ go test -run Func1
 ```
 run argument is a regex, "Func$" test all funcs with "Func" at beginning.
 
-*[Run only specific test cases in golang go test](http://blog.gaku.net/match/)
+* [Run only specific test cases in golang go test](http://blog.gaku.net/match/)
 
 ## #34 - File path exists 
 > 2016-15-03 by [@beyondns](https://github.com/beyondns)  
