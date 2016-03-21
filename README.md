@@ -20,6 +20,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 # Tips list
 
 
+- 35 - [Test specific functions](https://github.com/beyondns/gotips#35---test-specific-functions)
 - 34 - [File path exists](https://github.com/beyondns/gotips#34---file-path-exists)
 - 33 - [Table driven tests](https://github.com/beyondns/gotips#33---table-driven-tests)
 - 32 - [Work with consul](https://github.com/beyondns/gotips#32---work-with-consul)
@@ -57,6 +58,17 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
 
+## #35 - Test specific functions 
+> 2016-21-03 by [@beyondns](https://github.com/beyondns)  
+
+To test TestFunc1
+
+```bash
+go test -run Func1
+```
+run argument is a regex, "Func$" test all funcs with "Func" at beginning.
+
+*[Run only specific test cases in golang go test](http://blog.gaku.net/match/)
 
 ## #34 - File path exists 
 > 2016-15-03 by [@beyondns](https://github.com/beyondns)  
