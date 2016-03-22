@@ -20,7 +20,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 # Tips list
 
 
-- 36 - [Custom type marshal unmarshal json](https://github.com/beyondns/gotips#36---custom-type-marshal-unmarshal-sjon)
+- 36 - [Custom type marshal unmarshal json](https://github.com/beyondns/gotips#36---custom-type-marshal-unmarshal-json)
 - 35 - [Test specific functions](https://github.com/beyondns/gotips#35---test-specific-functions)
 - 34 - [File path exists](https://github.com/beyondns/gotips#34---file-path-exists)
 - 33 - [Table driven tests](https://github.com/beyondns/gotips#33---table-driven-tests)
