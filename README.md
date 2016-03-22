@@ -91,8 +91,12 @@ func TestDbTS(t *testing.T) {
 		t.Error(err)
 	}
 	
+	var timelabel int64
 	batch := new(leveldb.Batch)
 	for i:=0;i<16;i++{
+		if i==8{
+			timelabel=time.Now().UnixNano()
+		}
 		batch.Put([]byte(fmt.Sprintf("t%d",time.Now().UnixNano())), 
 			[]byte(fmt.Sprintf("v%d",i)))
 	}
@@ -102,7 +106,7 @@ func TestDbTS(t *testing.T) {
 	}
 
     iter := bcdb.NewIterator(nil, nil)
-    for ok := iter.Seek([]byte("t0")); ok; ok = iter.Next() {
+    for ok := iter.Seek([]byte(fmt.Sprintf("t%d",timelabel))); ok; ok = iter.Next() {
     	key,value := iter.Key(),iter.Value()
     	ks:=string(key)
     	if ks[0] == 't'{
