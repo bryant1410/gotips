@@ -482,12 +482,13 @@ func main() {
 * [libmill](https://github.com/sustrik/libmill)
 * [libconcurrent](https://github.com/sharow/libconcurrent)
 
-## #26 - Go channels are slow try it yourself lock-free
+## #26 - Go channels are slow
 > 2016-03-03 by [@beyondns](https://github.com/beyondns)
 
 * [go-channels-are-bad-and-you-should-feel-bad](http://www.jtolds.com/writing/2016/03/go-channels-are-bad-and-you-should-feel-bad/)
 * [proposal: improve channels for M:N producer/consumer scenarios](https://github.com/golang/go/issues/14601)
 * [github.com/eapache/channels](https://github.com/eapache/channels)
+* [interesting-ways-of-using-go-channels](http://nomad.so/2016/01/interesting-ways-of-using-go-channels/)
 
 ## #25 - Avoid conversions with hidden alloc copy
 > 2016-03-03 by [@beyondns](https://github.com/beyondns)  

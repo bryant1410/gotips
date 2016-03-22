@@ -31,7 +31,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 - 29 - [Partial json read](https://github.com/beyondns/gotips/blob/master/tips32.md#29---partial-json-read)
 - 28 - [Interact with etcd with http.Request](https://github.com/beyondns/gotips/blob/master/tips32.md#28---interact-with-etcd-with-httprequest)
 - 27 - [Go-style concurrency in C](https://github.com/beyondns/gotips/blob/master/tips32.md#27---go-style-concurrency-in-c)
-- 26 - [Go channels are slow try it yourself lock-free](https://github.com/beyondns/gotips/blob/master/tips32.md#26---go-channels-are-slow-try-it-yourself-lock-free)
+- 26 - [Go channels are slow](https://github.com/beyondns/gotips/blob/master/tips32.md#26---go-channels-are-slow)
 - 25 - [Avoid conversions with hidden alloc copy](https://github.com/beyondns/gotips/blob/master/tips32.md#25---avoid-conversions-with-hidden-alloc-copy)
 - 24 - [Slice shuffle](https://github.com/beyondns/gotips/blob/master/tips32.md#24---slice-shuffle)
 - 23 - [Defer is slow](https://github.com/beyondns/gotips/blob/master/tips32.md#23---defer-is-slow)
