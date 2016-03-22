@@ -20,6 +20,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 # Tips list
 
 
+- 36 - [Custom type marshal unmarshal json](https://github.com/beyondns/gotips#36---custom-type-marshal-unmarshal-sjon)
 - 35 - [Test specific functions](https://github.com/beyondns/gotips#35---test-specific-functions)
 - 34 - [File path exists](https://github.com/beyondns/gotips#34---file-path-exists)
 - 33 - [Table driven tests](https://github.com/beyondns/gotips#33---table-driven-tests)
@@ -57,6 +58,65 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
+## #36 - Custom type marshal unmarshal json 
+> 2016-21-03 by [@beyondns](https://github.com/beyondns)  
+
+Json marshalling can be defined for custom type by implementing MarshalJSON/UnmarshalJSON methods.
+
+```go
+type ByteSlice []byte
+
+func (s *ByteSlice) MarshalJSON() ([]byte, error) {
+	return []byte(`"`+hex.EncodeToString(*s)+`"`), nil
+}
+
+func (s *ByteSlice) UnmarshalJSON(data []byte) error {
+	d:=string(data)
+	if d[0]=='"'{d=d[1:]}
+	l:=len(d)
+ 	if d[l-1]=='"'{d=d[:l-1]}
+	var err error
+	*s,err=hex.DecodeString(d)
+	return err
+}
+```
+
+Testing
+
+```go
+
+type ByteSliceHolder struct {
+	Bin ByteSlice `json:"bin"`
+}
+
+func TestByteSliceJSON(t *testing.T) {
+	bsh := &ByteSliceHolder{}
+	_, err := fmt.Sscanf("082372739127341723ab", "%x", &bsh.Bin)
+	if err != nil {
+		t.Fatal("fmt.Sscanf failed")
+	}
+	bin, err := json.Marshal(bsh)
+
+	if err != nil {
+		t.Errorf("json.Marshal failed ", err)
+	}
+	//xlog.Debugf("%s", bin)
+
+	bsh2 := &ByteSliceHolder{}
+	err = json.Unmarshal(bin, &bsh2)
+
+	if err != nil {
+		t.Errorf("json.Marshal failed ", err)
+	}
+
+	if !bytes.Equal(bsh.Bin,bsh2.Bin){
+		t.Errorf("json.Marshal failed ", err)
+	
+	}
+
+}
+
+```
 
 ## #35 - Test specific functions 
 > 2016-21-03 by [@beyondns](https://github.com/beyondns)  
