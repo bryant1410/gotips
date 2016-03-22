@@ -20,6 +20,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 # Tips list
 
 
+- 37 - [Time series on leveldb](https://github.com/beyondns/gotips#37---time-series-on-leveldb)
 - 36 - [Custom type marshal unmarshal json](https://github.com/beyondns/gotips#36---custom-type-marshal-unmarshal-json)
 - 35 - [Test specific functions](https://github.com/beyondns/gotips#35---test-specific-functions)
 - 34 - [File path exists](https://github.com/beyondns/gotips#34---file-path-exists)
@@ -57,6 +58,69 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+## #37 - Time series on leveldb 
+> 2016-22-03 by [@beyondns](https://github.com/beyondns)  
+
+Use timestamp as a key in keyvalue storage, leveldb or any other. Just iterate over specific period of time.
+
+```go
+import (
+	"github.com/syndtr/goleveldb/leveldb"
+)
+var (
+	bcdb *leveldb.DB
+)
+
+func init(){
+	var err error
+	bcdb, err = leveldb.OpenFile("./db/bc.db", nil)
+	if err!=nil{
+		xlog.Error(err)
+		return
+	}
+	xlog.Notice("db init ok")
+}
+```
+Test
+
+```go
+func TestDbTS(t *testing.T) {
+	err := bcdb.Put([]byte("t0"),[]byte("boom"), nil)
+	if err!=nil{
+		t.Error(err)
+	}
+	
+	batch := new(leveldb.Batch)
+	for i:=0;i<16;i++{
+		batch.Put([]byte(fmt.Sprintf("t%d",time.Now().UnixNano())), 
+			[]byte(fmt.Sprintf("v%d",i)))
+	}
+	err = bcdb.Write(batch, nil)
+	if err!=nil{
+		t.Error(err)
+	}
+
+    iter := bcdb.NewIterator(nil, nil)
+    for ok := iter.Seek([]byte("t0")); ok; ok = iter.Next() {
+    	key,value := iter.Key(),iter.Value()
+    	ks:=string(key)
+    	if ks[0] == 't'{
+			ks=ks[1:]    		
+    	}
+    	ki, err := strconv.ParseInt(ks, 10, 64)
+    	if err!=nil{
+    		xlog.Error(err)
+    	}
+    	xlog.Debugf("key time : %s | value: %s\n", time.Unix(0,ki), value)
+	}
+	iter.Release()
+	err = iter.Error()
+	if err!=nil{
+		t.Error(err)
+	}
+}
+```
 
 ## #36 - Custom type marshal unmarshal json 
 > 2016-21-03 by [@beyondns](https://github.com/beyondns)  
