@@ -62,7 +62,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 
 
 ## #38 - Marsha Unmarshal to byte slice usng gob 
-> 2016-22-03 by [@beyondns](https://github.com/beyondns)  
+> 2016-25-03 by [@beyondns](https://github.com/beyondns)  
 
 ```go
 import (
