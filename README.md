@@ -20,6 +20,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 # Tips list
 
 
+- 38 - [Marsha Unmarshal to byte slice using gob](https://github.com/beyondns/gotips#38---marsha-unmarshal-to-byte-slice-using-gob)
 - 37 - [Time series on leveldb](https://github.com/beyondns/gotips#37---time-series-on-leveldb)
 - 36 - [Custom type marshal unmarshal json](https://github.com/beyondns/gotips#36---custom-type-marshal-unmarshal-json)
 - 35 - [Test specific functions](https://github.com/beyondns/gotips#35---test-specific-functions)
@@ -58,6 +59,30 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+
+## #38 - Marsha Unmarshal to byte slice usng gob 
+> 2016-22-03 by [@beyondns](https://github.com/beyondns)  
+
+```go
+import (
+	"bytes"
+	"encoding/gob"
+)
+
+func gobMarshal(v interface{}) ([]byte, error) {
+	var buf bytes.Buffer
+	if err := gob.NewEncoder(&buf).Encode(v); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
+func gobUnmarshal(data []byte, v interface{}) error {
+	return gob.NewDecoder(bytes.NewBuffer(data)).Decode(v)
+}
+
+```
 
 ## #37 - Time series on leveldb 
 > 2016-22-03 by [@beyondns](https://github.com/beyondns)  
