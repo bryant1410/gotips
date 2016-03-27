@@ -20,6 +20,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 # Tips list
 
 
+- 39 - [Public private struct fields and funcs](https://github.com/beyondns/gotips#39---public-private-struct-fields-and-funcs)
 - 38 - [Marsha Unmarshal to byte slice using gob](https://github.com/beyondns/gotips#38---marsha-unmarshal-to-byte-slice-using-gob)
 - 37 - [Time series on leveldb](https://github.com/beyondns/gotips#37---time-series-on-leveldb)
 - 36 - [Custom type marshal unmarshal json](https://github.com/beyondns/gotips#36---custom-type-marshal-unmarshal-json)
@@ -60,6 +61,64 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
+
+## #39 - Public private struct fields and funcs 
+> 2016-26-03 by [@beyondns](https://github.com/beyondns)  
+
+Go has specific approach of definition private/public package fields and funcs. All declarations within package is visible.  
+1st capital letter of name - public  
+1st not capital - private  
+
+lib/l.go
+
+```go
+package mylib
+
+import (
+	"fmt"
+)
+
+type Mydata struct{
+	X int // Public  - 1st capital letter
+	y int // private - 1st lower case
+}
+
+func (md *Mydata) DoAPI(){ // Public 1st capital
+	fmt.Println("DoAPI")
+}
+
+func (md *Mydata) doAPI(){ // Private 1st lower case
+	fmt.Println("doAPI")
+}
+
+```
+
+main.go
+
+```go
+package main
+
+import(
+	"./lib"
+	"fmt"
+)
+
+func main(){
+	x:=mylib.Mydata{
+		X:1,
+		//y:2, // error private
+	}
+
+	x.DoAPI()
+
+//	x.doAPI() // error private
+
+	fmt.Print(x.X)
+
+//	fmt.Print(x.y) // error private
+}
+
+```
 
 ## #38 - Marsha Unmarshal to byte slice usng gob 
 > 2016-25-03 by [@beyondns](https://github.com/beyondns)  
