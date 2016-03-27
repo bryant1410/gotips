@@ -77,16 +77,26 @@ import (
 	"fmt"
 )
 
+const (
+	Const1 = "c1"
+	const2 = "c2"
+)
+
+var (
+	Var1 = 1
+	var2 = 2
+)
+
 type Mydata struct{
-	X int // Public  - 1st capital letter
-	y int // private - 1st lower case
+	X int // Public
+	y int // private
 }
 
-func (md *Mydata) DoAPI(){ // Public 1st capital
+func (md *Mydata) DoAPI(){
 	fmt.Println("DoAPI")
 }
 
-func (md *Mydata) doAPI(){ // Private 1st lower case
+func (md *Mydata) doAPI(){
 	fmt.Println("doAPI")
 }
 
@@ -112,11 +122,17 @@ func main(){
 
 //	x.doAPI() // error private
 
-	fmt.Print(x.X)
+	fmt.Println(x.X)
 
 //	fmt.Print(x.y) // error private
-}
 
+	fmt.Println(mylib.Const1)
+//	fmt.Println(mylib.const2) // error private
+
+	fmt.Println(mylib.Var1)
+//	fmt.Println(mylib.var2) // error private
+
+}
 ```
 
 ## #38 - Marsha Unmarshal to byte slice usng gob 
