@@ -66,8 +66,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 > 2016-26-03 by [@beyondns](https://github.com/beyondns)  
 
 Go has specific approach of definition private/public package fields and funcs. All declarations within package is visible.  
-1st capital letter of name - public  
-1st not capital - private  
+But from other packages only names with 1st capital letter is visible (public)  
 
 lib/l.go
 
