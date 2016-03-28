@@ -65,7 +65,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 ## #39 - Public private struct fields and funcs 
 > 2016-26-03 by [@beyondns](https://github.com/beyondns)  
 
-Go has specific approach of definition private/public package fields and funcs. All declarations within package is visible.  
+Go has specific approach of definition private/public package fields and funcs. All declarations within package is visible (different os files).  
 But from other packages only names with 1st capital letter is visible (public)  
 
 lib/l.go
