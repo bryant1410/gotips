@@ -89,13 +89,27 @@ var (
 	Nodes []string
 )
 
-func sysHandler(w http.ResponseWriter, r *http.Request) {
+func sysHandler1(w http.ResponseWriter, r *http.Request) {
 	d, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("bad reguest, error %v", err), http.StatusBadRequest)
 		return
 	}
-	log.Printf("sysHandler: %s",string(d))
+	log.Printf("sysHandler1: %s",string(d))
+	w.WriteHeader(http.StatusOK)
+}
+
+func sysHandler2(w http.ResponseWriter, r *http.Request) {
+	d, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("bad reguest, error %v", err), http.StatusBadRequest)
+		return
+	}
+	log.Printf("sysHandler2: %s",string(d))
+	if localConsensus(d,"1",w,r){
+		w.WriteHeader(http.StatusOK)
+	}
+
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -108,19 +122,26 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("apiHandler: %s",string(d))
 
+	if localConsensus(d,"2",w,r){
+		w.WriteHeader(http.StatusOK)
+	}
+
+}
+
+func localConsensus(d []byte, st string, 
+	w http.ResponseWriter, r *http.Request) bool{
 	if len(d)>0{
-		ok,err:=SendDataToWorld(d)
+		ok,err:=SendDataToWorld(d,st)
 		if err!=nil {
 			http.Error(w, fmt.Sprintf("SendDataToWorld error %v", err), http.StatusBadRequest)
-			return
+			return false
 		}
 		if !ok {
 			http.Error(w, "no consensus", http.StatusBadRequest)
-			return
+			return false
 		}
 	}
-
-	w.WriteHeader(http.StatusOK)
+	return true
 }
 
 func main() {
@@ -133,11 +154,12 @@ func main() {
 	log.Printf("Nodes %v",Nodes)
 
 	http.HandleFunc("/api", apiHandler)
-	http.HandleFunc("/sys", sysHandler)
+	http.HandleFunc("/sys1", sysHandler1)
+	http.HandleFunc("/sys2", sysHandler2)
 	log.Fatal(http.ListenAndServe(*api, nil))
 }
 
-func SendDataToWorld(data []byte) (bool,error){
+func SendDataToWorld(data []byte, st string) (bool,error){
 
 	var l = len(Nodes)
 	var wg sync.WaitGroup
@@ -150,7 +172,7 @@ func SendDataToWorld(data []byte) (bool,error){
 		go func(i int, u string) {
 			var e error
 			rs[i],rd[i],e=httpRequest("POST",
-				"http://"+u+"/sys",data,time.Second*15)
+				"http://"+u+"/sys"+st,data,time.Second*15)
 			re[i]=(e==nil)
 			wg.Done()
 		}(i, u)
@@ -163,7 +185,8 @@ func SendDataToWorld(data []byte) (bool,error){
 
 }
 
-func httpRequest(meth, u string, data []byte, timeLimit time.Duration) (int, []byte, error) {
+func httpRequest(meth, u string, data []byte, 
+	timeLimit time.Duration) (int, []byte, error) {
 
     tr := &http.Transport{}
     client := &http.Client{Transport: tr}
@@ -214,7 +237,6 @@ func findConsensus(rs []int,rd [][]byte,re []bool)(bool,error){
 	if len(rs) != len(rd) || len(rs) == 0 || len(rd) == 0 {
 		panic(fmt.Sprintf("FindConsensus error papams: %v,%v", rs, rd))
 	}
-	//l:=len(rs)
 	ok:=0
 	n:=0
 	for i, _ := range rs{
@@ -227,7 +249,7 @@ func findConsensus(rs []int,rd [][]byte,re []bool)(bool,error){
 		}
 	}
 	log.Printf("find consensus %d : %d",ok,n)
-	// 50% ok
+	// 51% ok
 	if float32(ok)>float32(n)/float32(2){
 		return true,nil
 	}
