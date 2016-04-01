@@ -19,7 +19,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 
 # Tips list
 
-
+- 40 - [Distributed consensus](https://github.com/beyondns/gotips#40---distributed-consensus)
 - 39 - [Public private struct fields and funcs](https://github.com/beyondns/gotips#39---public-private-struct-fields-and-funcs)
 - 38 - [Marsha Unmarshal to byte slice using gob](https://github.com/beyondns/gotips#38---marsha-unmarshal-to-byte-slice-using-gob)
 - 37 - [Time series on leveldb](https://github.com/beyondns/gotips#37---time-series-on-leveldb)
@@ -61,6 +61,179 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
+
+## #40 - Distributed consensus 
+> 2016-01-04 by [@beyondns](https://github.com/beyondns)  
+
+Distributed consensus is a common shared state or logic support equal across multiple nodes.  
+1-stage (semi or one-many) consensus: send data to nodes, get responses, find consensus on one node (if >50% ok).
+2-stage (full or many-many)consensus: send data to nodes, nodes send all-to-all,find consensus on each node (if >50% ok).
+
+```go
+package main
+
+import (
+	"flag"
+	"log"
+	"net/http"
+	"fmt"
+	"strings"
+	"time"
+	"bytes"
+	"errors"
+	"io/ioutil"
+	"sync"
+)
+
+var (
+	Nodes []string
+)
+
+func sysHandler(w http.ResponseWriter, r *http.Request) {
+	d, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("bad reguest, error %v", err), http.StatusBadRequest)
+		return
+	}
+	log.Printf("sysHandler: %s",string(d))
+	w.WriteHeader(http.StatusOK)
+}
+
+func apiHandler(w http.ResponseWriter, r *http.Request) {
+	d, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("bad reguest, error %v", err), http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("apiHandler: %s",string(d))
+
+	if len(d)>0{
+		ok,err:=SendDataToWorld(d)
+		if err!=nil {
+			http.Error(w, fmt.Sprintf("SendDataToWorld error %v", err), http.StatusBadRequest)
+			return
+		}
+		if !ok {
+			http.Error(w, "no consensus", http.StatusBadRequest)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func main() {
+	nodes := flag.String("nodes", "127.0.0.1:12379,127.0.0.1:22379,127.0.0.1:32379", "nodes host0:port0,host1:port1,..")
+	api := flag.String("api", "127.0.0.1:12379", "api host:port")
+	flag.Parse()
+
+	Nodes=strings.Split(*nodes,",")
+
+	log.Printf("Nodes %v",Nodes)
+
+	http.HandleFunc("/api", apiHandler)
+	http.HandleFunc("/sys", sysHandler)
+	log.Fatal(http.ListenAndServe(*api, nil))
+}
+
+func SendDataToWorld(data []byte) (bool,error){
+
+	var l = len(Nodes)
+	var wg sync.WaitGroup
+	wg.Add(l)
+
+	var rd [][]byte = make([][]byte, l)
+	var rs []int = make([]int, l)
+	var re []bool = make([]bool, l)
+	for i, u := range Nodes {
+		go func(i int, u string) {
+			var e error
+			rs[i],rd[i],e=httpRequest("POST",
+				"http://"+u+"/sys",data,time.Second*15)
+			re[i]=(e==nil)
+			wg.Done()
+		}(i, u)
+	}
+	wg.Wait()
+
+	log.Printf("%v %v %v",rs,rd,re)
+
+	return findConsensus(rs,rd,re)
+
+}
+
+func httpRequest(meth, u string, data []byte, timeLimit time.Duration) (int, []byte, error) {
+
+    tr := &http.Transport{}
+    client := &http.Client{Transport: tr}
+    c := make(chan error, 1)
+
+    var respStatus int
+    var respBody []byte
+    req, err := http.NewRequest(meth, u, bytes.NewBuffer(data))
+    if err != nil {
+        return 0, nil, err
+    }
+
+
+    go func() {
+        resp, err := client.Do(req)
+
+        if err != nil {
+            goto E
+        }
+
+        respStatus = resp.StatusCode
+
+        respBody, err = ioutil.ReadAll(resp.Body)
+    E:
+        c <- err
+        if resp != nil && resp.Body != nil {
+            resp.Body.Close()
+        }
+    }()
+
+    select {
+    case <-time.After(timeLimit):
+        tr.CancelRequest(req)
+        log.Printf("Request timeout")
+        <-c // Wait for goroutine to return.
+        return 0, nil, errors.New("request time out")
+    case err := <-c:
+        if err != nil {
+            log.Printf("Error in request goroutine %v", err)
+            return 0, nil, err
+        }
+        return respStatus, respBody, nil
+    }
+
+}
+
+func findConsensus(rs []int,rd [][]byte,re []bool)(bool,error){
+	if len(rs) != len(rd) || len(rs) == 0 || len(rd) == 0 {
+		panic(fmt.Sprintf("FindConsensus error papams: %v,%v", rs, rd))
+	}
+	//l:=len(rs)
+	ok:=0
+	n:=0
+	for i, _ := range rs{
+		if !re[i]{
+			continue	
+		}
+		n++
+		if rs[i] == http.StatusOK{
+			ok++
+		}
+	}
+	log.Printf("find consensus %d : %d",ok,n)
+	// 50% ok
+	if float32(ok)>float32(n)/float32(2){
+		return true,nil
+	}
+	return false,nil
+}
+```
 
 ## #39 - Public private struct fields and funcs 
 > 2016-26-03 by [@beyondns](https://github.com/beyondns)  
