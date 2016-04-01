@@ -67,7 +67,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 
 Distributed consensus is a common shared state or logic support equal across multiple nodes.  
 1-stage (semi or one-many) consensus: send data to nodes, get responses, find consensus on one node.  
-2-stage (full or many-many)consensus: send data to nodes, nodes send all-to-all,find consensus on each node.  
+2-stage (full or many-many) consensus: send data to nodes, nodes send all-to-all, find consensus on each node.  
 
 ```go
 package main
