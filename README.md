@@ -21,7 +21,7 @@ You can hire just drop an email to beyondnanosecond@gmail.com
 
 - 40 - [Distributed consensus](https://github.com/beyondns/gotips#40---distributed-consensus)
 - 39 - [Public private struct fields and funcs](https://github.com/beyondns/gotips#39---public-private-struct-fields-and-funcs)
-- 38 - [Marsha Unmarshal to byte slice using gob](https://github.com/beyondns/gotips#38---marsha-unmarshal-to-byte-slice-using-gob)
+- 38 - [Marshal Unmarshal to byte slice using gob](https://github.com/beyondns/gotips#38---marshal-unmarshal-to-byte-slice-using-gob)
 - 37 - [Time series on leveldb](https://github.com/beyondns/gotips#37---time-series-on-leveldb)
 - 36 - [Custom type marshal unmarshal json](https://github.com/beyondns/gotips#36---custom-type-marshal-unmarshal-json)
 - 35 - [Test specific functions](https://github.com/beyondns/gotips#35---test-specific-functions)
@@ -330,7 +330,7 @@ func main(){
 }
 ```
 
-## #38 - Marsha Unmarshal to byte slice usng gob 
+## #38 - Marshal Unmarshal to byte slice usng gob 
 > 2016-25-03 by [@beyondns](https://github.com/beyondns)  
 
 ```go
