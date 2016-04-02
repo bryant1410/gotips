@@ -12,11 +12,6 @@ Please feel free to send a PR with your own Golang tip to be published here. Any
 
 This will help to promote the project!
 
-> **Have a project?**
-
-You can hire just drop an email to beyondnanosecond@gmail.com
-
-
 # Tips list
 
 - 40 - [Distributed consensus](https://github.com/beyondns/gotips#40---distributed-consensus)
