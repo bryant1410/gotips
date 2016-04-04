@@ -4,14 +4,6 @@
 
 This list of short golang code tips & trics will help keep collected knowledge in one place. 
 
-> Can you help make it better?
-
-Please feel free to send a PR with your own Golang tip to be published here. Any improvements or suggestions are welcome!  
-
-> Don't forget to Star the repo
-
-This will help to promote the project!
-
 # Tips list
 
 - 40 - [Distributed consensus](https://github.com/beyondns/gotips#40---distributed-consensus)
