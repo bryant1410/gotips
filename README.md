@@ -101,15 +101,18 @@ type Result struct {
 }
 
 
-var (
-    ans map[int]
-)
-
 func main(){
+
+log.Printf("sendMessage:%s",Me())
+
+log.Printf("sendMessage:%s",SendMessage(209816615,"wtf???"))
+
     for{
         res:=Updates()
         if res.Ok{
+            //log.Printf("%v",res)
             for _,u:=range res.Res{
+                //Message
                 log.Printf("upd:%v",u)    
             }
         }
@@ -148,10 +151,19 @@ func Updates()Result{
     return res
 }
 
-func SendMessage(chat_id int, text string){
+func SendMessage(chat_id int, text string)string{
     v := url.Values{}
     v.Add("chat_id", strconv.Itoa(chat_id))    
     v.Add("text", text)    
+    st,d,err:=httpRequest("GET",API+TOKEN+"/sendMessage?"+v.Encode(),
+        nil,time.Second*15)
+    if err!=nil{
+        log.Fatal(err)
+    }
+    if st!=http.StatusOK{
+        log.Fatalf("status %d",st)
+    }
+    return string(d)
 }
 
 func httpRequest(meth, u string, data []byte, 
