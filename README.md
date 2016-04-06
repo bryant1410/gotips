@@ -6,6 +6,7 @@ This list of short golang code tips & trics will help keep collected knowledge i
 
 # Tips list
 
+- 41 - [Telegram bot](https://github.com/beyondns/gotips#41---telegram-bot)
 - 40 - [Distributed consensus](https://github.com/beyondns/gotips#40---distributed-consensus)
 - 39 - [Public private struct fields and funcs](https://github.com/beyondns/gotips#39---public-private-struct-fields-and-funcs)
 - 38 - [Marshal Unmarshal to byte slice using gob](https://github.com/beyondns/gotips#38---marshal-unmarshal-to-byte-slice-using-gob)
@@ -47,6 +48,162 @@ This list of short golang code tips & trics will help keep collected knowledge i
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+
+## #41 - Telegram bot 
+> 2016-06-04 by [@beyondns](https://github.com/beyondns)  
+
+```go
+package main
+
+import(
+	"log"
+	"net/http"
+    "net/url"
+    "time"
+    "bytes"
+    "errors"
+    "io/ioutil"
+    "encoding/json"
+    "strconv"
+)
+
+// https://core.telegram.org/bots/api
+
+const (
+	API = "https://api.telegram.org/bot"
+	TOKEN = ""
+)
+
+type Chat struct {
+    Id int `json:"id"`
+}
+
+type From struct {
+    Id int `json:"id"`
+}
+
+type Message struct {
+    Id int `json:"message_id"`
+    From From `json:"from"`
+    Chat Chat `json:"chat"`
+    Text string `json:"text"`
+}
+
+type Update struct {
+    Id int `json:"update_id"`
+    Msg Message `json:"message"`
+}
+
+type Result struct {
+    Ok       bool            `json:"ok"`
+    Res      []Update        `json:"result"`
+}
+
+
+var (
+    ans map[int]
+)
+
+func main(){
+    for{
+        res:=Updates()
+        if res.Ok{
+            for _,u:=range res.Res{
+                log.Printf("upd:%v",u)    
+            }
+        }
+        time.Sleep(time.Second*5)
+    }
+}
+
+func Me()string{
+    st,d,err:=httpRequest("GET",API+TOKEN+"/getMe",nil,time.Second*15)
+    if err!=nil{
+        log.Fatal(err)
+    }
+    if st!=http.StatusOK{
+        log.Fatalf("status %d",st)
+    }
+    return string(d)
+}
+
+func Updates()Result{
+    st,d,err:=httpRequest("GET",API+TOKEN+"/getUpdates",nil,time.Second*15)
+    if err!=nil{
+        log.Fatal(err)
+    }
+    if st!=http.StatusOK{
+        log.Fatalf("status %d",st)
+    }
+
+    res:=Result{}
+    if len(d)>0{
+        log.Printf(string(d))
+        err:=json.Unmarshal(d, &res)
+        if err!=nil{
+            log.Fatal(err)
+        }
+    }
+    return res
+}
+
+func SendMessage(chat_id int, text string){
+    v := url.Values{}
+    v.Add("chat_id", strconv.Itoa(chat_id))    
+    v.Add("text", text)    
+}
+
+func httpRequest(meth, u string, data []byte, 
+    timeLimit time.Duration) (int, []byte, error) {
+
+    tr := &http.Transport{}
+    client := &http.Client{Transport: tr}
+    c := make(chan error, 1)
+
+    var respStatus int
+    var respBody []byte
+    req, err := http.NewRequest(meth, u, bytes.NewBuffer(data))
+    if err != nil {
+        return 0, nil, err
+    }
+
+
+    go func() {
+        resp, err := client.Do(req)
+
+        if err != nil {
+            goto E
+        }
+
+        respStatus = resp.StatusCode
+
+        respBody, err = ioutil.ReadAll(resp.Body)
+    E:
+        c <- err
+        if resp != nil && resp.Body != nil {
+            resp.Body.Close()
+        }
+    }()
+
+    select {
+    case <-time.After(timeLimit):
+        tr.CancelRequest(req)
+        log.Printf("Request timeout")
+        <-c // Wait for goroutine to return.
+        return 0, nil, errors.New("request time out")
+    case err := <-c:
+        if err != nil {
+            log.Printf("Error in request goroutine %v", err)
+            return 0, nil, err
+        }
+        return respStatus, respBody, nil
+    }
+
+}
+```
+
+* [api](https://core.telegram.org/bots/api)
 
 
 ## #40 - Distributed consensus 
