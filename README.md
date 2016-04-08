@@ -53,164 +53,219 @@ This list of short golang code tips & trics will help keep collected knowledge i
 ## #41 - Telegram bot 
 > 2016-06-04 by [@beyondns](https://github.com/beyondns)  
 
+Simple echo Telegram bot no external dependencies
+
 ```go
 package main
 
-import(
+import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"io/ioutil"
 	"log"
 	"net/http"
-    "net/url"
-    "time"
-    "bytes"
-    "errors"
-    "io/ioutil"
-    "encoding/json"
-    "strconv"
+	"net/url"
+	"strconv"
+	"time"
 )
 
 // https://core.telegram.org/bots/api
 
 const (
-	API = "https://api.telegram.org/bot"
-	TOKEN = ""
+	API   = "https://api.telegram.org/bot"
+	TOKEN = <YOUR TOKEN HERE>
 )
 
 type Chat struct {
-    Id int `json:"id"`
+	Id int `json:"id"`
 }
 
 type From struct {
-    Id int `json:"id"`
+	Id int `json:"id"`
 }
 
 type Message struct {
-    Id int `json:"message_id"`
-    From From `json:"from"`
-    Chat Chat `json:"chat"`
-    Text string `json:"text"`
+	Id   int    `json:"message_id"`
+	From From   `json:"from"`
+	Chat Chat   `json:"chat"`
+	Text string `json:"text"`
+	Date uint32 `json:"date"`
 }
 
 type Update struct {
-    Id int `json:"update_id"`
-    Msg Message `json:"message"`
+	Id  int     `json:"update_id"`
+	Msg Message `json:"message"`
 }
 
 type Result struct {
-    Ok       bool            `json:"ok"`
-    Res      []Update        `json:"result"`
+	Ok  bool     `json:"ok"`
+	Res []Update `json:"result"`
 }
 
+/*
+{
+     "ok": true,
+     "result": [{
+         "update_id": 215439784,
+         "message": {
+             "message_id": 21,
+             "from": {
+                 "id": 209816615,
+                 "first_name": "Black",
+                 "last_name": "Ninja",
+                 "username": "blackninja3k"
+             },
+             "chat": {
+                 "id": 209816615,
+                 "first_name": "Black",
+                 "last_name": "Ninja",
+                 "username": "blackninja3k",
+                 "type": "private"
+             },
+             "date": 1459938757,
+             "text": "hello"
+         }
+     }, {
+         "update_id": 215439785,
+         "message": {
+             "message_id": 22,
+             "from": {
+                 "id": 209816615,
+                 "first_name": "Black",
+                 "last_name": "Ninja",
+                 "username": "blackninja3k"
+             },
+             "chat": {
+                 "id": 209816615,
+                 "first_name": "Black",
+                 "last_name": "Ninja",
+                 "username": "blackninja3k",
+                 "type": "private"
+             },
+             "date": 1459939461,
+             "text": "pooooop"
+         }
+     }]
+ }
 
-func main(){
+*/
 
-log.Printf("sendMessage:%s",Me())
-
-log.Printf("sendMessage:%s",SendMessage(209816615,"wtf???"))
-
-    for{
-        res:=Updates()
-        if res.Ok{
-            //log.Printf("%v",res)
-            for _,u:=range res.Res{
-                //Message
-                log.Printf("upd:%v",u)    
-            }
-        }
-        time.Sleep(time.Second*5)
-    }
+func HandleUpdate(u *Update) {
+	log.Printf("upd:%v", *u)
+	msgDate := time.Unix(int64(u.Msg.Date), 0)
+	if time.Since(msgDate).Minutes() < 1 {
+		SendMessage(u.Msg.Chat.Id, "u:"+u.Msg.Text)
+	}
 }
 
-func Me()string{
-    st,d,err:=httpRequest("GET",API+TOKEN+"/getMe",nil,time.Second*15)
-    if err!=nil{
-        log.Fatal(err)
-    }
-    if st!=http.StatusOK{
-        log.Fatalf("status %d",st)
-    }
-    return string(d)
+func main() {
+	log.Printf("Me:%s", Me())
+	var lastID = 0
+	for {
+		res := Updates()
+		if res.Ok {
+			for _, u := range res.Res {
+				if u.Id > lastID {
+					lastID = u.Id
+					HandleUpdate(&u)
+				}
+			}
+		}
+		time.Sleep(time.Second * 2)
+	}
 }
 
-func Updates()Result{
-    st,d,err:=httpRequest("GET",API+TOKEN+"/getUpdates",nil,time.Second*15)
-    if err!=nil{
-        log.Fatal(err)
-    }
-    if st!=http.StatusOK{
-        log.Fatalf("status %d",st)
-    }
-
-    res:=Result{}
-    if len(d)>0{
-        log.Printf(string(d))
-        err:=json.Unmarshal(d, &res)
-        if err!=nil{
-            log.Fatal(err)
-        }
-    }
-    return res
+func Me() string {
+	st, d, err := httpRequest("GET", API+TOKEN+"/getMe", nil, time.Second*15)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if st != http.StatusOK {
+		log.Fatalf("status %d", st)
+	}
+	return string(d)
 }
 
-func SendMessage(chat_id int, text string)string{
-    v := url.Values{}
-    v.Add("chat_id", strconv.Itoa(chat_id))    
-    v.Add("text", text)    
-    st,d,err:=httpRequest("GET",API+TOKEN+"/sendMessage?"+v.Encode(),
-        nil,time.Second*15)
-    if err!=nil{
-        log.Fatal(err)
-    }
-    if st!=http.StatusOK{
-        log.Fatalf("status %d",st)
-    }
-    return string(d)
+func Updates() Result {
+	st, d, err := httpRequest("GET", API+TOKEN+"/getUpdates", nil, time.Second*15)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if st != http.StatusOK {
+		log.Fatalf("status %d", st)
+	}
+
+	res := Result{}
+	if len(d) > 0 {
+		//log.Printf(string(d))
+		err := json.Unmarshal(d, &res)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	return res
 }
 
-func httpRequest(meth, u string, data []byte, 
-    timeLimit time.Duration) (int, []byte, error) {
+func SendMessage(chat_id int, text string) string {
+	v := url.Values{}
+	v.Add("chat_id", strconv.Itoa(chat_id))
+	v.Add("text", text)
+	st, d, err := httpRequest("GET", API+TOKEN+"/sendMessage?"+v.Encode(),
+		nil, time.Second*15)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if st != http.StatusOK {
+		log.Fatalf("status %d", st)
+	}
+	return string(d)
+}
 
-    tr := &http.Transport{}
-    client := &http.Client{Transport: tr}
-    c := make(chan error, 1)
+func httpRequest(meth, u string, data []byte,
+	timeLimit time.Duration) (int, []byte, error) {
 
-    var respStatus int
-    var respBody []byte
-    req, err := http.NewRequest(meth, u, bytes.NewBuffer(data))
-    if err != nil {
-        return 0, nil, err
-    }
+	tr := &http.Transport{}
+	client := &http.Client{Transport: tr}
+	c := make(chan error, 1)
 
+	var respStatus int
+	var respBody []byte
+	req, err := http.NewRequest(meth, u, bytes.NewBuffer(data))
+	if err != nil {
+		return 0, nil, err
+	}
 
-    go func() {
-        resp, err := client.Do(req)
+	go func() {
+		resp, err := client.Do(req)
 
-        if err != nil {
-            goto E
-        }
+		if err != nil {
+			goto E
+		}
 
-        respStatus = resp.StatusCode
+		respStatus = resp.StatusCode
 
-        respBody, err = ioutil.ReadAll(resp.Body)
-    E:
-        c <- err
-        if resp != nil && resp.Body != nil {
-            resp.Body.Close()
-        }
-    }()
+		respBody, err = ioutil.ReadAll(resp.Body)
+	E:
+		c <- err
+		if resp != nil && resp.Body != nil {
+			resp.Body.Close()
+		}
+	}()
 
-    select {
-    case <-time.After(timeLimit):
-        tr.CancelRequest(req)
-        log.Printf("Request timeout")
-        <-c // Wait for goroutine to return.
-        return 0, nil, errors.New("request time out")
-    case err := <-c:
-        if err != nil {
-            log.Printf("Error in request goroutine %v", err)
-            return 0, nil, err
-        }
-        return respStatus, respBody, nil
-    }
+	select {
+	case <-time.After(timeLimit):
+		tr.CancelRequest(req)
+		log.Printf("Request timeout")
+		<-c // Wait for goroutine to return.
+		return 0, nil, errors.New("request time out")
+	case err := <-c:
+		if err != nil {
+			log.Printf("Error in request goroutine %v", err)
+			return 0, nil, err
+		}
+		return respStatus, respBody, nil
+	}
 
 }
 ```
