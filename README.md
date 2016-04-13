@@ -1,8 +1,8 @@
 ![header](https://raw.githubusercontent.com/beyondns/gotips/master/gophers.jpg)
 
-> **Golang short tips & trics**
+> **Golang short tips & tricks**
 
-This list of short golang code tips & trics will help keep collected knowledge in one place. 
+This list of short golang code tips & tricks will help keep collected knowledge in one place. 
 
 # Tips list
 
