@@ -103,53 +103,6 @@ type Result struct {
 	Res []Update `json:"result"`
 }
 
-/*
-{
-     "ok": true,
-     "result": [{
-         "update_id": 215439784,
-         "message": {
-             "message_id": 21,
-             "from": {
-                 "id": 209816615,
-                 "first_name": "Black",
-                 "last_name": "Ninja",
-                 "username": "blackninja3k"
-             },
-             "chat": {
-                 "id": 209816615,
-                 "first_name": "Black",
-                 "last_name": "Ninja",
-                 "username": "blackninja3k",
-                 "type": "private"
-             },
-             "date": 1459938757,
-             "text": "hello"
-         }
-     }, {
-         "update_id": 215439785,
-         "message": {
-             "message_id": 22,
-             "from": {
-                 "id": 209816615,
-                 "first_name": "Black",
-                 "last_name": "Ninja",
-                 "username": "blackninja3k"
-             },
-             "chat": {
-                 "id": 209816615,
-                 "first_name": "Black",
-                 "last_name": "Ninja",
-                 "username": "blackninja3k",
-                 "type": "private"
-             },
-             "date": 1459939461,
-             "text": "pooooop"
-         }
-     }]
- }
-
-*/
 
 func HandleUpdate(u *Update) {
 	log.Printf("upd:%v", *u)
