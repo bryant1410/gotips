@@ -103,7 +103,6 @@ type Result struct {
 	Res []Update `json:"result"`
 }
 
-
 func HandleUpdate(u *Update) {
 	log.Printf("upd:%v", *u)
 	msgDate := time.Unix(int64(u.Msg.Date), 0)
