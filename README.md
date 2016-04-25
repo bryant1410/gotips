@@ -6,6 +6,7 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 
 # Tips list
 
+- 42 - [Optimize Go](https://github.com/beyondns/gotips#42---optimize-go)
 - 41 - [Telegram bot](https://github.com/beyondns/gotips#41---telegram-bot)
 - 40 - [Distributed consensus](https://github.com/beyondns/gotips#40---distributed-consensus)
 - 39 - [Public private struct fields and funcs](https://github.com/beyondns/gotips#39---public-private-struct-fields-and-funcs)
@@ -49,6 +50,13 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
+
+## #42 - Optimize Go 
+> 2016-26-04 by [@beyondns](https://github.com/beyondns)  
+
+```go
+```
+[How to optimize ‪#‎golang‬ for really high performance](https://www.youtube.com/watch?v=ZuQcbqYK0BY)
 
 ## #41 - Telegram bot 
 > 2016-06-04 by [@beyondns](https://github.com/beyondns)  
