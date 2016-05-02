@@ -6,6 +6,7 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 
 # Tips list
 
+- 43 - [Passing args as a map](https://github.com/beyondns/gotips#43---passing-args-as-a-map)
 - 42 - [Optimize Go](https://github.com/beyondns/gotips#42---optimize-go)
 - 41 - [Telegram bot](https://github.com/beyondns/gotips#41---telegram-bot)
 - 40 - [Distributed consensus](https://github.com/beyondns/gotips#40---distributed-consensus)
@@ -49,6 +50,43 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+## #43 - Passing args as a map
+> 2016-01-05 by [@beyondns](https://github.com/beyondns)  
+
+In some cases passign arguments as map to a function is flexible and convenient way. It looks like js hack. 
+
+
+```go
+package main
+
+import(
+	//"fmt"
+	"log"
+)
+
+func f2(args map[string]interface{})int{
+	if _,ok:=args["y"];ok{
+		log.Printf("y in args: %v",args["y"])
+		return 1
+	}
+	return 0	
+}
+func f1(args map[string]interface{})int{
+	if _,ok:=args["x"];ok{
+		log.Printf("x in args: %v",args["x"])
+	}
+	args["y"]="zebro"
+	return f2(args)
+}
+
+func main(){
+	args:=make(map[string]interface{})
+	args["x"]=12345
+	log.Printf("result=%d",f1(args))
+
+}
+```
 
 
 ## #42 - Optimize Go 
