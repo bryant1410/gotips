@@ -92,8 +92,6 @@ func main(){
 ## #42 - Optimize Go 
 > 2016-26-04 by [@beyondns](https://github.com/beyondns)  
 
-```go
-```
 [How to optimize ‪#‎golang‬ for really high performance](https://www.youtube.com/watch?v=ZuQcbqYK0BY)
 
 ## #41 - Telegram bot 
