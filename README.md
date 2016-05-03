@@ -6,6 +6,7 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 
 # Tips list
 
+- 44 - [Facebook messenger chatbot](https://github.com/beyondns/gotips#44---facebook-messenger-chatbot)
 - 43 - [Passing args as a map](https://github.com/beyondns/gotips#43---passing-args-as-a-map)
 - 42 - [Optimize Go](https://github.com/beyondns/gotips#42---optimize-go)
 - 41 - [Telegram bot](https://github.com/beyondns/gotips#41---telegram-bot)
@@ -50,6 +51,200 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+
+## #44 - Facebook messenger chatbot
+> 2016-03-05 by [@beyondns](https://github.com/beyondns)  
+
+Simple echo bot for facebook messenger
+
+```go
+package main
+
+import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
+	"net/url"
+	"encoding/json"
+	"time"
+	"bytes"
+	"errors"
+)
+
+const (
+    API   = "https://graph.facebook.com/v2.6/me/messages"
+    TOKEN = <YOUR TOKEN HERE>
+)
+
+
+type FBSender struct{
+	Id int64 `json:"id"`
+}
+
+type FBRecipient struct{
+	Id int64 `json:"id"`
+}
+
+type FBMessage struct{
+	Text string `json:"text"`
+}
+
+type FBMessaging struct{
+	Sender FBSender `json:"sender"`
+	Recipient FBRecipient `json:"recipient"`
+	TS int64 `json:"timestamp"`
+	Message FBMessage `json:"message"`
+}
+
+type FBEntry struct{
+    M []FBMessaging `json:"messaging"`
+}
+
+type FBMsgEntry struct{
+	E []FBEntry `json:"entry"`
+}
+
+type FBSendMsgEntry struct{
+	Recipient FBRecipient `json:"recipient"`
+    Message FBMessage 	`json:"message"`
+}
+
+type Forever struct{}
+
+func (s *Forever) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
+	if r.Method == "GET" {
+		if r.URL.Path == "/webhook" {
+			if r.URL.Query().Get("hub.verify_token") == "verify_me_token1" {
+				fmt.Fprintf(w, "%s", r.URL.Query().Get("hub.challenge"))
+				return
+			}
+			fmt.Fprintf(w, "hi")
+			return
+		}
+	}
+
+	if r.Method == "POST" {
+		if r.URL.Path == "/webhook" {
+
+			d, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("bad reguest, error %v", err), http.StatusBadRequest)
+				return
+			}
+
+			log.Printf("%s", string(d))
+
+			fbe := FBMsgEntry{}
+			if len(d) > 0 {
+				err := json.Unmarshal(d, &fbe)
+				if err != nil {
+					log.Fatal(err)
+				}
+				for _,e:=range fbe.E{
+					for _,m:=range e.M{
+						if len(m.Message.Text)>0{
+							log.Printf("%d,%s",m.Sender,m.Message.Text)
+							sendTextMessage(m.Sender.Id,m.Message.Text)
+						}
+					}
+				}
+			}
+			return
+		}
+	}
+
+}
+
+func main() {
+	port := os.Getenv("OPENSHIFT_GO_PORT")
+	host := os.Getenv("OPENSHIFT_GO_IP")
+	if port == "" {
+		port = "8080"
+	}
+	if host == "" {
+		host = "127.0.0.1"
+	}
+	bind := fmt.Sprintf("%s:%s", host, port)
+	st,d,err:=sendTextMessage(1025678430855700,"hey ya!")
+	log.Printf("%d %s %v",st,string(d),err)
+
+	log.Printf("listening on %s...", bind)
+	log.Fatal(http.ListenAndServe(bind, &Forever{}))
+}
+
+
+func sendTextMessage(senderId int64,text string) (int, []byte, error){
+	v := url.Values{}
+    v.Add("access_token", TOKEN)
+    fbe:=FBSendMsgEntry{}
+    fbe.Recipient.Id=senderId
+    fbe.Message.Text=text
+    data,err:=json.Marshal(fbe)
+    if err!=nil{
+    	log.Fatal(err)
+    }
+    log.Printf("data: %s",data)
+	st,d,err:=httpRequest("POST", API+"?"+v.Encode(),data,time.Second*15)	
+	return st,d,err
+}
+
+
+func httpRequest(meth, u string, data []byte,
+    timeLimit time.Duration) (int, []byte, error) {
+
+    tr := &http.Transport{}
+    client := &http.Client{Transport: tr}
+    c := make(chan error, 1)
+
+    var respStatus int
+    var respBody []byte
+    req, err := http.NewRequest(meth, u, bytes.NewBuffer(data))
+    if err != nil {
+        return 0, nil, err
+    }
+
+    req.Header.Add("Content-Type", "application/json; charset=utf-8")
+
+    go func() {
+        resp, err := client.Do(req)
+
+        if err != nil {
+            goto E
+        }
+
+        respStatus = resp.StatusCode
+
+        respBody, err = ioutil.ReadAll(resp.Body)
+    E:
+        c <- err
+        if resp != nil && resp.Body != nil {
+            resp.Body.Close()
+        }
+    }()
+
+    select {
+    case <-time.After(timeLimit):
+        tr.CancelRequest(req)
+        log.Printf("Request timeout")
+        <-c // Wait for goroutine to return.
+        return 0, nil, errors.New("request time out")
+    case err := <-c:
+        if err != nil {
+            log.Printf("Error in request goroutine %v", err)
+            return 0, nil, err
+        }
+        return respStatus, respBody, nil
+    }
+
+}
+
+```
+
+* [messenger](https://developers.facebook.com/products/messenger/)
 
 ## #43 - Passing args as a map
 > 2016-01-05 by [@beyondns](https://github.com/beyondns)  
