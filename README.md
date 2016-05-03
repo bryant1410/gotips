@@ -170,9 +170,6 @@ func main() {
 		host = "127.0.0.1"
 	}
 	bind := fmt.Sprintf("%s:%s", host, port)
-	st,d,err:=sendTextMessage(1025678430855700,"hey ya!")
-	log.Printf("%d %s %v",st,string(d),err)
-
 	log.Printf("listening on %s...", bind)
 	log.Fatal(http.ListenAndServe(bind, &Forever{}))
 }
