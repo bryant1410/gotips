@@ -77,6 +77,7 @@ import (
 const (
     API   = "https://graph.facebook.com/v2.6/me/messages"
     TOKEN = <YOUR TOKEN HERE>
+    VERIFY_TOKEN = <YOUR VERIFY TOKEN HERE>
 )
 
 
@@ -118,7 +119,7 @@ func (s *Forever) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
 	if r.Method == "GET" {
 		if r.URL.Path == "/webhook" {
-			if r.URL.Query().Get("hub.verify_token") == "verify_me_token1" {
+			if r.URL.Query().Get("hub.verify_token") == VERIFY_TOKEN {
 				fmt.Fprintf(w, "%s", r.URL.Query().Get("hub.challenge"))
 				return
 			}
