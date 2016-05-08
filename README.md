@@ -6,6 +6,7 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 
 # Tips list
 
+- 45 - [Go is more a framework than a language](https://github.com/beyondns/gotips#45---Go-is-more-a-framework-than-a-language)
 - 44 - [Facebook messenger chatbot](https://github.com/beyondns/gotips#44---facebook-messenger-chatbot)
 - 43 - [Passing args as a map](https://github.com/beyondns/gotips#43---passing-args-as-a-map)
 - 42 - [Optimize Go](https://github.com/beyondns/gotips#42---optimize-go)
@@ -52,6 +53,12 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
+
+## #45 - Go is more a framework than a language
+> 2016-08-05 by [@beyondns](https://github.com/beyondns)  
+
+Go is more a framework than a language. Anything can be built on top of [libuv](https://github.com/libuv/libuv), [libev](http://software.schmorp.de/pkg/libev.html), [epoll](https://en.wikipedia.org/wiki/Epoll), etc. But it's not so easy.  
+Many ideas have been accumulated in Go + awesome tools and libraries. That it. No magic. Ready to go, in production. 
 
 ## #44 - Facebook messenger chatbot
 > 2016-03-05 by [@beyondns](https://github.com/beyondns)  
@@ -175,11 +182,11 @@ func main() {
 }
 
 
-func sendTextMessage(senderId int64,text string) (int, []byte, error){
+func sendTextMessage(id int64,text string) (int, []byte, error){
 	v := url.Values{}
     v.Add("access_token", TOKEN)
     fbe:=FBSendMsgEntry{}
-    fbe.Recipient.Id=senderId
+    fbe.Recipient.Id=id
     fbe.Message.Text=text
     data,err:=json.Marshal(fbe)
     if err!=nil{
