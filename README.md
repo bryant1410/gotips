@@ -6,7 +6,7 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 
 # Tips list
 
-- 45 - [Go is more a framework than a language](https://github.com/beyondns/gotips#45---Go-is-more-a-framework-than-a-language)
+- 45 - [Go is more a framework than a language](https://github.com/beyondns/gotips#45---go-is-more-a-framework-than-a-language)
 - 44 - [Facebook messenger chatbot](https://github.com/beyondns/gotips#44---facebook-messenger-chatbot)
 - 43 - [Passing args as a map](https://github.com/beyondns/gotips#43---passing-args-as-a-map)
 - 42 - [Optimize Go](https://github.com/beyondns/gotips#42---optimize-go)
