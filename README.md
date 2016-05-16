@@ -58,7 +58,9 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 > 2016-08-05 by [@beyondns](https://github.com/beyondns)  
 
 Go is more a framework than a language. Anything can be built on top of [libuv](https://github.com/libuv/libuv), [libev](http://software.schmorp.de/pkg/libev.html), [epoll](https://en.wikipedia.org/wiki/Epoll), etc. But it's not so easy.  
-Many ideas have been accumulated in Go + awesome tools and libraries. That it. No magic. Ready to go in production. 
+Many ideas have been accumulated in Go + awesome tools and libraries. That it. No magic. Ready to go in production.
+
+* ["Go style concurency in C"](https://github.com/sustrik/libmill)
 
 ## #44 - Facebook messenger chatbot
 > 2016-03-05 by [@beyondns](https://github.com/beyondns)  
