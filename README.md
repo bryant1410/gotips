@@ -6,7 +6,7 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 
 # Tips list
 
-- 46 - [Unique key doc manipulation in MonGo](https://github.com/beyondns/gotips#45---unique-key-doc-manipulation-in-mongo)
+- 46 - [Unique key doc manipulation in MonGo](https://github.com/beyondns/gotips#46---unique-key-doc-manipulation-in-mongo)
 - 45 - [Go is more a framework than a language](https://github.com/beyondns/gotips#45---go-is-more-a-framework-than-a-language)
 - 44 - [Facebook messenger chatbot](https://github.com/beyondns/gotips#44---facebook-messenger-chatbot)
 - 43 - [Passing args as a map](https://github.com/beyondns/gotips#43---passing-args-as-a-map)
