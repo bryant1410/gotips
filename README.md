@@ -115,7 +115,7 @@ func DelObject(c *mgo.Collection, key string) error {
 
 ```js
 // little tip how to select sub node key {"_key":"key1",{"node":{"subnode":"subnodevalue"}}}
-{"_key" : "key1","node.subnode":{ $exists: true }
+{"_key" : "key1","node.subnode":{ $exists: true }}
 ```
 
 * [mgo.v2](https://godoc.org/gopkg.in/mgo.v2)
