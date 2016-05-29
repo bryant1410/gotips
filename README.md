@@ -6,6 +6,7 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 
 # Tips list
 
+- 47 - [Use C for computation intencive operations](https://github.com/beyondns/gotips#47---use-c-for-computation-intencive-operations)
 - 46 - [Unique key doc manipulation in MonGo](https://github.com/beyondns/gotips#46---unique-key-doc-manipulation-in-mongo)
 - 45 - [Go is more a framework than a language](https://github.com/beyondns/gotips#45---go-is-more-a-framework-than-a-language)
 - 44 - [Facebook messenger chatbot](https://github.com/beyondns/gotips#44---facebook-messenger-chatbot)
@@ -54,6 +55,41 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
+
+## #47 - Use C for computation intencive operations
+> 2016-29-05 by [@beyondns](https://github.com/beyondns)  
+
+Usage of C in Go code pretty stright forward  
+
+```go
+package main
+
+/*
+#include <stdlib.h>
+#include <openssl/sha.h>    
+#cgo LDFLAGS: -lcrypto
+*/
+import "C"
+import (
+    "fmt"
+    "unsafe"
+)
+
+func main() {
+
+    const msg string = "Alice in wonderland"
+
+    md := (*C.char)(unsafe.Pointer(C.SHA256( (*C.uchar)(unsafe.Pointer(C.CString(msg))), 
+        C.size_t(len(msg)), (*C.uchar)(nil) )))
+
+    res := C.GoString( md );
+
+    fmt.Printf("%x",res)// 604e40d7814621e2412a42b8d04e37d56bdea4628f5d622fb782bb644be8722f
+}
+```
+
+* [cgo](https://golang.org/cmd/cgo/)
+* [SHA256](https://rosettacode.org/wiki/SHA-256#C)
 
 ## #46 - Unique key doc manipulation in MonGo 
 > 2016-21-05 by [@beyondns](https://github.com/beyondns)  
