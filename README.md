@@ -6,7 +6,7 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 
 # Tips list
 
-- 47 - [Use C for computation intencive operations](https://github.com/beyondns/gotips#47---use-c-for-computation-intencive-operations)
+- 47 - [Use C for computation intensive operations](https://github.com/beyondns/gotips#47---use-c-for-computation-intensive-operations)
 - 46 - [Unique key doc manipulation in MonGo](https://github.com/beyondns/gotips#46---unique-key-doc-manipulation-in-mongo)
 - 45 - [Go is more a framework than a language](https://github.com/beyondns/gotips#45---go-is-more-a-framework-than-a-language)
 - 44 - [Facebook messenger chatbot](https://github.com/beyondns/gotips#44---facebook-messenger-chatbot)
@@ -56,7 +56,7 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
 
-## #47 - Use C for computation intencive operations
+## #47 - Use C for computation intensive operations
 > 2016-29-05 by [@beyondns](https://github.com/beyondns)  
 
 Usage of C in Go code pretty stright forward  
