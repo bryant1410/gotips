@@ -422,7 +422,7 @@ import (
 
 const (
 	API   = "https://api.telegram.org/bot"
-	TOKEN = <YOUR TOKEN HERE>
+	TOKEN = "185646453:AAHF9mOHRKxgeWfaY8HuMwhISYCJIF7EVE8"
 )
 
 type Chat struct {
@@ -451,29 +451,48 @@ type Result struct {
 	Res []Update `json:"result"`
 }
 
-func HandleUpdate(u *Update) {
-	log.Printf("upd:%v", *u)
-	msgDate := time.Unix(int64(u.Msg.Date), 0)
-	if time.Since(msgDate).Minutes() < 1 {
+
+func main() {
+	log.Printf("Me:%s", Me())
+	uc := createUpdatesChan()
+	for u := range uc {
 		SendMessage(u.Msg.Chat.Id, "u:"+u.Msg.Text)
 	}
 }
 
-func main() {
-	log.Printf("Me:%s", Me())
-	var lastID = 0
-	for {
-		res := Updates()
-		if res.Ok {
-			for _, u := range res.Res {
-				if u.Id > lastID {
-					lastID = u.Id
-					HandleUpdate(&u)
+func createUpdatesChan() <-chan *Update {
+	uc := make(chan *Update, 1024)
+	go func() {
+
+        const limit = 16
+        const timeout = 60
+		var offset = 0
+		for {
+			res, err := Updates(offset,limit,timeout)
+			if err != nil {
+				log.Printf("Updates error %v", err)
+				time.Sleep(time.Second * 3)
+				continue
+			}
+
+			if !res.Ok {
+				log.Printf("Updates !res.Ok %v", res)
+				time.Sleep(time.Second * 3)
+				continue
+			}
+
+			for i, u := range res.Res {
+				if u.Id >= offset {
+					log.Printf("u %v", u)
+					offset = u.Id+1
+					uc <- &res.Res[i]
 				}
 			}
+            time.Sleep(time.Millisecond * 10)
 		}
-		time.Sleep(time.Second * 2)
-	}
+	}()
+
+    return uc
 }
 
 func Me() string {
@@ -487,39 +506,48 @@ func Me() string {
 	return string(d)
 }
 
-func Updates() Result {
-	st, d, err := httpRequest("GET", API+TOKEN+"/getUpdates", nil, time.Second*15)
+func Updates(offset,limit,timeout int) (*Result, error) {
+    v := url.Values{}
+    if offset>0 {v.Add("offset", strconv.Itoa(offset))}
+    if limit>0 {v.Add("limit", strconv.Itoa(limit))}
+    if timeout>0 {v.Add("timeout", strconv.Itoa(timeout))}
+	st, d, err := httpRequest("GET", API+TOKEN+"/getUpdates?"+v.Encode(), nil, 
+        time.Second*(60+15))
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 	if st != http.StatusOK {
-		log.Fatalf("status %d", st)
+		log.Printf("status %d\n", st)
+		return nil, err
 	}
 
-	res := Result{}
+	res := &Result{}
 	if len(d) > 0 {
-		//log.Printf(string(d))
 		err := json.Unmarshal(d, &res)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return nil, err
 		}
 	}
-	return res
+	return res, nil
 }
 
-func SendMessage(chat_id int, text string) string {
+func SendMessage(chat_id int, text string) (string, error) {
 	v := url.Values{}
 	v.Add("chat_id", strconv.Itoa(chat_id))
 	v.Add("text", text)
 	st, d, err := httpRequest("GET", API+TOKEN+"/sendMessage?"+v.Encode(),
 		nil, time.Second*15)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return "", err
 	}
 	if st != http.StatusOK {
-		log.Fatalf("status %d", st)
+		log.Printf("status %d\n", st)
+		return "", err
 	}
-	return string(d)
+	return string(d), nil
 }
 
 func httpRequest(meth, u string, data []byte,
