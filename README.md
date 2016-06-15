@@ -257,6 +257,10 @@ Simple echo bot for facebook messenger
 ```go
 package main
 
+//
+// https://developers.facebook.com/docs/messenger-platform/send-api-reference#guidelines
+//
+
 import (
 	"fmt"
 	"io/ioutil"
@@ -268,25 +272,86 @@ import (
 	"time"
 	"bytes"
 	"errors"
+	"regexp"
 )
 
 const (
     API   = "https://graph.facebook.com/v2.6/me/messages"
-    TOKEN = <YOUR TOKEN HERE>
-    VERIFY_TOKEN = <YOUR VERIFY TOKEN HERE>
+	TOKEN = < YOUR TOKEN HERE>
 )
 
 
+type FBId string
+
 type FBSender struct{
-	Id int64 `json:"id"`
+	Id FBId `json:"id"`
 }
 
 type FBRecipient struct{
-	Id int64 `json:"id"`
+	Id FBId `json:"id"`
 }
 
+type FBElementPostbackButton struct{
+	Type string `json:"type"` // postback
+	Title string `json:"title"`
+	Payload string `json:"payload"`
+}
+
+type FBElementUrlButton struct{
+	Type string `json:"type"` // web_url
+	Title string `json:"title"`
+	Url string `json:"url"`
+}
+
+type FBTemplatePayloadElement struct{
+	Title string `json:"title"`
+	Image_url string `json:"image_url"`
+	Subtitle string `json:"subtitle"`
+	Buttons []interface{} `json:"buttons"`
+}
+
+type FBTemplatePayload struct{
+	Template_type string `json:"template_type"`
+	Elements []FBTemplatePayloadElement `json:"elements"`
+}
+
+
+type FBImgPayload struct{
+	Url string `json:"url"`
+}
+
+type FBAttachment struct{
+	Type string `json:"type"`
+	Payload interface{} `json:"payload"`
+}
+
+
+type FBSendAttachmentMessage struct{
+	Attachment FBAttachment `json:"attachment"`
+}
+
+
+type FBSendAttachementMsgEntry struct{
+	Recipient FBRecipient `json:"recipient"`
+    Message FBSendAttachmentMessage `json:"message"`
+}
+
+
+type FBSendTextMessage struct{
+	Text string `json:"text"`
+}
+
+type FBSendTextMsgEntry struct{
+	Recipient FBRecipient `json:"recipient"`
+    Message FBSendTextMessage 	`json:"message"`
+}
+
+type FBMessagePostbackPayload struct{
+	Payload string `json:"payload"`
+}
 type FBMessage struct{
 	Text string `json:"text"`
+
 }
 
 type FBMessaging struct{
@@ -294,6 +359,7 @@ type FBMessaging struct{
 	Recipient FBRecipient `json:"recipient"`
 	TS int64 `json:"timestamp"`
 	Message FBMessage `json:"message"`
+	Postback FBMessagePostbackPayload `json:"postback"`
 }
 
 type FBEntry struct{
@@ -304,10 +370,6 @@ type FBMsgEntry struct{
 	E []FBEntry `json:"entry"`
 }
 
-type FBSendMsgEntry struct{
-	Recipient FBRecipient `json:"recipient"`
-    Message FBMessage 	`json:"message"`
-}
 
 type Forever struct{}
 
@@ -315,7 +377,7 @@ func (s *Forever) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
 	if r.Method == "GET" {
 		if r.URL.Path == "/webhook" {
-			if r.URL.Query().Get("hub.verify_token") == VERIFY_TOKEN {
+			if r.URL.Query().Get("hub.verify_token") == "verify_me_token1" {
 				fmt.Fprintf(w, "%s", r.URL.Query().Get("hub.challenge"))
 				return
 			}
@@ -343,10 +405,7 @@ func (s *Forever) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				for _,e:=range fbe.E{
 					for _,m:=range e.M{
-						if len(m.Message.Text)>0{
-							log.Printf("%d,%s",m.Sender,m.Message.Text)
-							sendTextMessage(m.Sender.Id,m.Message.Text)
-						}
+						MessageHandle(&m)
 					}
 				}
 			}
@@ -354,6 +413,30 @@ func (s *Forever) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+}
+
+
+func MessageHandle(m *FBMessaging){
+
+	if len(m.Postback.Payload)>0{
+		log.Printf("Postback.Payload %d,%s",m.Sender,m.Postback.Payload)
+		sendTextMessage(m.Sender.Id,"you awesome man!")
+	}
+	if len(m.Message.Text)>0{
+
+		if m.Message.Text == "demo"{
+			st,d,err:=sendTemplateMessage4(m.Sender.Id,[]string{
+			"http://media1.santabanta.com/full1/Animals/Elephants/elephants-9a.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/a/ad/Kruger_Elephant.JPG",
+			"https://upload.wikimedia.org/wikipedia/commons/4/4f/Elephant%2C_Selous_Game_Reserve.jpg",
+			})
+			log.Printf("%d %s %v",st,string(d),err)
+			return
+		}
+
+		log.Printf("Message.Text %d,%s",m.Sender,m.Message.Text)
+		sendTextMessage(m.Sender.Id,"type demo for demo")//m.Message.Text)
+	}
 }
 
 func main() {
@@ -366,23 +449,77 @@ func main() {
 		host = "127.0.0.1"
 	}
 	bind := fmt.Sprintf("%s:%s", host, port)
+
 	log.Printf("listening on %s...", bind)
 	log.Fatal(http.ListenAndServe(bind, &Forever{}))
 }
 
+func sendTemplateMessage4(senderId FBId, carouselUrls []string) (int, []byte, error){
 
-func sendTextMessage(id int64,text string) (int, []byte, error){
-	v := url.Values{}
-    v.Add("access_token", TOKEN)
-    fbe:=FBSendMsgEntry{}
-    fbe.Recipient.Id=id
-    fbe.Message.Text=text
-    data,err:=json.Marshal(fbe)
+    fbe:=&FBSendAttachementMsgEntry{}
+    fbe.Recipient.Id=senderId
+    fbe.Message.Attachment.Type="template"
+    payload:=FBTemplatePayload{
+    	Template_type:"generic",
+    }
+    for i,img_url:=range carouselUrls{
+    	e:=FBTemplatePayloadElement{
+			Title:fmt.Sprintf("title %d",i),
+			Image_url: img_url,
+			Subtitle:fmt.Sprintf("subtitle %d",i),
+	   	}
+    	e.Buttons = append(e.Buttons, FBElementUrlButton{
+            Type:"web_url",
+            Url: img_url,
+            Title: "View Item",
+    	})
+    	e.Buttons = append(e.Buttons, FBElementPostbackButton{
+            Type:"postback",
+            Title: "Action",
+            Payload: fmt.Sprintf("payload %d",i),
+    	})
+    	payload.Elements=append(payload.Elements,e)
+    }
+
+    fbe.Message.Attachment.Payload=payload
+
+    data,err:=json.Marshal(*fbe)
     if err!=nil{
     	log.Fatal(err)
     }
-    log.Printf("data: %s",data)
-	st,d,err:=httpRequest("POST", API+"?"+v.Encode(),data,time.Second*15)	
+
+    return sendMessage(senderId,data)
+}
+
+
+func sendImgMessage(senderId FBId,imgUrl string) (int, []byte, error){
+    fbe:=&FBSendAttachementMsgEntry{}
+    fbe.Recipient.Id=senderId
+    fbe.Message.Attachment.Type="image"
+    fbe.Message.Attachment.Payload=FBImgPayload{Url:imgUrl}
+    data,err:=json.Marshal(*fbe)
+    if err!=nil{
+    	log.Fatal(err)
+    }
+    return sendMessage(senderId,data)
+}
+
+func sendTextMessage(senderId FBId,text string) (int, []byte, error){
+    fbe:=&FBSendTextMsgEntry{}
+    fbe.Recipient.Id=senderId
+    fbe.Message.Text=text
+    data,err:=json.Marshal(*fbe)
+    if err!=nil{
+    	log.Fatal(err)
+    }
+    return sendMessage(senderId,data)
+}
+
+func sendMessage(senderId FBId,data []byte) (int, []byte, error){
+	v := url.Values{}
+    v.Add("access_token", TOKEN)
+    log.Printf("sendMessage to:%v data: %s",senderId, string(data))
+	st,d,err:=httpRequest("POST", API+"?"+v.Encode(),[]byte(data),time.Second*15)	
 	return st,d,err
 }
 
