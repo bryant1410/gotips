@@ -6,6 +6,8 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 
 # Tips list
 
+- 49 - [custom wait group](https://github.com/beyondns/gotips#49---custom-wait-group)
+- 48 - [ev_loop vs co_routine](https://github.com/beyondns/gotips#48---ev_loop-vs-co_routine)
 - 47 - [Use C for computation intensive operations](https://github.com/beyondns/gotips#47---use-c-for-computation-intensive-operations)
 - 46 - [Unique key doc manipulation in MonGo](https://github.com/beyondns/gotips#46---unique-key-doc-manipulation-in-mongo)
 - 45 - [Go is more a framework than a language](https://github.com/beyondns/gotips#45---go-is-more-a-framework-than-a-language)
@@ -55,6 +57,80 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
+## #49 - custom wait group
+> 2016-15-06 by [@beyondns](https://github.com/beyondns)  
+
+Custom wait group, it's easy to use wait groups to sync different go routines, if you need more control just do it custom.   
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync/atomic"
+	"time"
+)
+
+func main() {
+	fmt.Println("Start")
+	const N = 5
+	var c uint32 = 0
+	var n uint32 = N
+	done := make(chan struct{})
+	doneMap := make(map[int]struct{})
+
+	for i := 0; i < N; i++ {
+		go func(i int) {
+			// do work
+			if i == 3 {
+				// simulate timeout
+				time.Sleep(2 * time.Second)
+			}
+			doneMap[i] = struct{}{}
+			fmt.Printf("done f%d\n", i)
+			atomic.AddUint32(&c, 1)
+			if c == n {
+				done <- struct{}{}
+			}
+		}(i)
+	}
+
+	select {
+	case <-time.After(time.Second * 1):
+		for i := 0; i < N; i++ {
+			_, ok := doneMap[i]
+			if ok {
+				fmt.Printf("%d done ok\n", i)
+			} else {
+				fmt.Printf("%d not done\n", i)
+			}
+
+		}
+		panic("time out")
+	case <-done:
+		fmt.Printf("Done")
+	}
+
+}
+
+```
+
+
+
+## #48 - ev_loop vs co_routine
+> 2016-07-06 by [@beyondns](https://github.com/beyondns)  
+
+This tip was promised, stay tuned.
+
+It's super simple to implement udp/tcp/http etc. servers in #Go but how it vs plain event loop in C.  
+
+ev_loop.c
+```c
+```
+
+co_routine.go
+```go
+```
 
 ## #47 - Use C for computation intensive operations
 > 2016-29-05 by [@beyondns](https://github.com/beyondns)  
@@ -150,8 +226,17 @@ func DelObject(c *mgo.Collection, key string) error {
 ```
 
 ```js
-// little tip how to select sub node key {"_key":"key1",{"node":{"subnode":"subnodevalue"}}}
+// little tip how to select sub node key
+// data
+{"_key":"key1",{"node":{"subnode":"subnodevalue"}}}
+// query
 {"_key" : "key1","node.subnode":{ $exists: true }}
+```
+
+```js
+// little tip how to select by date, a bit js code here
+// query
+{'date':{'$gte' : new Date((new Date()).toISOString())}}
 ```
 
 * [mgo.v2](https://godoc.org/gopkg.in/mgo.v2)
