@@ -5,6 +5,7 @@
 This list of short golang code tips & tricks will help keep collected knowledge in one place.
 
 > **Project support**
+
 Send some ether 0x2c6b19f1a486f9c7b5670c21fdf95fc7dc972828 
 
 # Tips list
