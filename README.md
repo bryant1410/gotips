@@ -82,7 +82,7 @@ func main() {
 
 	for i := 0; i < N; i++ {
 		go func(i int) {
-			// do work
+			// do work, an http request for example
 			if i == 3 {
 				// simulate timeout
 				time.Sleep(2 * time.Second)
