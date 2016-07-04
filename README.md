@@ -5,8 +5,12 @@
 This list of short golang code tips & tricks will help keep collected knowledge in one place.
 
 
+> **Support project**
+Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
+
 # Tips list
 
+- 50 - [cool links](https://github.com/beyondns/gotips#49---cool-links)
 - 49 - [custom wait group](https://github.com/beyondns/gotips#49---custom-wait-group)
 - 48 - [ev_loop vs co_routine](https://github.com/beyondns/gotips#48---ev_loop-vs-co_routine)
 - 47 - [Use C for computation intensive operations](https://github.com/beyondns/gotips#47---use-c-for-computation-intensive-operations)
@@ -57,6 +61,14 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+
+## #50 - cool links
+> 2016-15-06 by [@beyondns](https://github.com/beyondns)  
+
+* [channels](https://github.com/eapache/channels)
+* [jsonparser](https://github.com/buger/jsonparser)
+* [go data structures](https://github.com/emirpasic/gods)
 
 ## #49 - custom wait group
 > 2016-15-06 by [@beyondns](https://github.com/beyondns)  
