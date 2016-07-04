@@ -10,7 +10,7 @@ Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
 
 # Tips list
 
-- 50 - [cool links](https://github.com/beyondns/gotips#49---cool-links)
+- 50 - [cool go links](https://github.com/beyondns/gotips#50---cool-go-links)
 - 49 - [custom wait group](https://github.com/beyondns/gotips#49---custom-wait-group)
 - 48 - [ev_loop vs co_routine](https://github.com/beyondns/gotips#48---ev_loop-vs-co_routine)
 - 47 - [Use C for computation intensive operations](https://github.com/beyondns/gotips#47---use-c-for-computation-intensive-operations)
@@ -63,7 +63,7 @@ Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
 
-## #50 - cool links
+## #50 - cool go links
 > 2016-15-06 by [@beyondns](https://github.com/beyondns)  
 
 * [channels](https://github.com/eapache/channels)
