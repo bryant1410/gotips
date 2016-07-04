@@ -64,7 +64,7 @@ Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
 
 
 ## #50 - cool go links
-> 2016-15-06 by [@beyondns](https://github.com/beyondns)  
+> 2016-05-07 by [@beyondns](https://github.com/beyondns)  
 
 * [channels](https://github.com/eapache/channels)
 * [jsonparser](https://github.com/buger/jsonparser)
