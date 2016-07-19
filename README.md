@@ -10,6 +10,7 @@ Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
 
 # Tips list
 
+- 51 - [BBQ](https://github.com/beyondns/gotips#51---bbq)
 - 50 - [cool go links](https://github.com/beyondns/gotips#50---cool-go-links)
 - 49 - [custom wait group](https://github.com/beyondns/gotips#49---custom-wait-group)
 - 48 - [ev_loop vs co_routine](https://github.com/beyondns/gotips#48---ev_loop-vs-co_routine)
@@ -62,6 +63,132 @@ Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
+
+## #51 - BBQ
+> 2016-19-07 by [@beyondns](https://github.com/beyondns)  
+
+Block buffered queue (BBQ)
+
+```go
+package bbq
+
+import (
+	"errors"
+	"sync"
+)
+
+// block buffered queue
+type BlockBQ struct {
+	B1, B1 *[]interface{} // 2 buffers pointers
+	I      int            // current index
+	M      int            // max index
+	T      int64          // total number
+	mx     sync.Mutex     // sync
+}
+
+func NewBBQ(l int) *BlockBQ {
+	b1, b2 := make([]interface{}, l), make([]interface{}, l)
+	bbq := &BlockBQ{B1: &b1, B2: &b2}
+	return bbq
+}
+
+func (bbq *BlockBQ) Swap() int {
+	var l int
+	bbq.mx.Lock()
+	t := bbq.B1
+	bbq.B1 = bbq.B2
+	bbq.B2 = t
+	l = bbq.I
+	bbq.I = 0
+	bbq.T += int64(l)
+	bbq.mx.Unlock()
+	return l
+}
+
+func (bbq *BlockBQ) Push(p interface{}) error {
+	var err error
+	bbq.mx.Lock()
+	if bbq.I >= len(*(bbq.B1)) {
+		err = errors.New("BBQ overflow")
+	} else {
+		(*bbq.B1)[bbq.I] = p
+		bbq.I++
+	}
+	if bbq.I > bbq.M {
+		bbq.M = bbq.I
+	}
+	bbq.mx.Unlock()
+	return err
+}
+```
+
+
+```go
+package bbq
+
+import (
+	_ "fmt"
+	"log"
+	"math/rand"
+	"testing"
+	"time"
+)
+
+func TestBBQ(t *testing.T) {
+	var data []int
+	bbq := NewBBQ(1024)
+	done := make(chan struct{})
+
+	go func() {
+		for {
+			select {
+			case <-time.After(time.Millisecond * 1000):
+				l := bbq.Swap()
+				bk := make([]interface{}, l)
+				copy(bk, *(bbq.B2))
+				go func(bk []interface{}) {
+					for _, v := range bk {
+						d := v.(int)
+						data = append(data, d)
+					}
+					log.Printf("bbq swap len(bk)=%d, len(data)=%d", len(bk), len(data))
+				}(bk)
+			case <-done:
+				log.Printf("Done 1")
+				return
+			}
+		}
+	}()
+
+	go func() { // generate txs
+		counter := 0
+		for {
+			select {
+			case <-time.After(time.Millisecond * 100):
+				n := 1 + rand.Intn(10)
+				for i := 0; i < n; i++ {
+					bbq.Push(counter)
+					counter++
+				}
+			case <-done:
+				log.Printf("Done 2")
+				return
+			}
+
+		}
+	}()
+
+	<-time.After(time.Second * 5)
+	close(done)
+	log.Printf("len(data)=%d", len(data))
+	log.Printf("%v", data)
+	for i, d := range data {
+		if i != d {
+			t.Fatalf("i!=d %d %d", i, d)
+		}
+	}
+}
+```
 
 ## #50 - cool go links
 > 2016-05-07 by [@beyondns](https://github.com/beyondns)  
