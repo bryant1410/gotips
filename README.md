@@ -10,7 +10,7 @@ Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
 
 # Tips list
 
-- 52 - [nil](https://github.com/beyondns/gotips#52--nil)
+- 52 - [nil](https://github.com/beyondns/gotips#52---nil)
 - 51 - [BBQ](https://github.com/beyondns/gotips#51---bbq)
 - 50 - [cool go links](https://github.com/beyondns/gotips#50---cool-go-links)
 - 49 - [custom wait group](https://github.com/beyondns/gotips#49---custom-wait-group)
