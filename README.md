@@ -10,6 +10,7 @@ Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
 
 # Tips list
 
+- 52 - [nil](https://github.com/beyondns/gotips#52--nil)
 - 51 - [BBQ](https://github.com/beyondns/gotips#51---bbq)
 - 50 - [cool go links](https://github.com/beyondns/gotips#50---cool-go-links)
 - 49 - [custom wait group](https://github.com/beyondns/gotips#49---custom-wait-group)
@@ -63,6 +64,10 @@ Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
+## #52 - nil
+> 2016-22-07 by [@beyondns](https://github.com/beyondns)  
+
+nil is zero value for pointer, channel, func, interface, map, slice.
 
 ## #51 - BBQ
 > 2016-19-07 by [@beyondns](https://github.com/beyondns)  
