@@ -10,7 +10,7 @@ Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
 
 # Tips list
 
-- 53 - [EC operations from bitcoin core](https://github.com/beyondns/gotips#53---EC-operations-from-bitcoin-core)
+- 53 - [EC operations from bitcoin core](https://github.com/beyondns/gotips#53---ec-operations-from-bitcoin-core)
 - 52 - [nil](https://github.com/beyondns/gotips#52---nil)
 - 51 - [BBQ](https://github.com/beyondns/gotips#51---bbq)
 - 50 - [cool go links](https://github.com/beyondns/gotips#50---cool-go-links)
