@@ -77,6 +77,7 @@ git clone https://github.com/bitcoin-core/secp256k1.git
 ./autogen.sh && ./configure && make
 sudo make install
 export LD_LIBRARY_PATH=/usr/local/lib
+
 ```
 
 ```go
@@ -240,6 +241,119 @@ func MsgSignVerify(msg []byte, sig []byte, pub []byte) (bool) {
 	}
 	return true
 }
+
+```
+
+```go
+package secp256k1_test
+
+import (
+	_"crypto/rand"
+	_"crypto/sha256"
+	_"io"
+	"testing"
+	"github.com/beyondns/hypers/crypto/secp256k1"
+	"fmt"
+	"log"
+	"bytes"
+	"io"
+	crand "crypto/rand"
+
+)
+
+func TestGenKeyPair(t *testing.T) {
+	var ok bool
+	var pub,priv []byte
+
+	for i:=0;i<1000;i++{
+		pub,priv,ok=secp256k1.GenKeyPair()
+		if !ok {
+			log.Printf("secp256k1.GenKeyPair error")
+			continue
+		}
+		r:=secp256k1.PrivkeyVerify(priv)
+		if !r {
+			log.Printf("secp256k1.PrivkeyVerify error")
+			continue
+		}
+	}
+
+	fmt.Printf("pub %x\n",pub)
+	fmt.Printf("priv %x\n",priv)
+	fmt.Printf("ok\n")
+}
+
+func TestGenKeyPair2(t *testing.T) {
+	var ok bool
+	var pub,pubComp,pub2,priv []byte
+
+	for i:=0;i<1000;i++{
+
+	priv,ok = secp256k1.GenPrivkey()
+	if !ok{
+		t.Fatalf("GenPrivkey()")		
+	}
+	pub,ok = secp256k1.GenPubkey(priv)
+	if !ok{
+		t.Fatalf("GenPubkey()")		
+	}
+	pubComp,ok = secp256k1.PubkeySerialize(pub)
+	if !ok{
+		t.Fatalf("secp256k1.PubkeySerialize()")		
+	}
+
+	pub2,ok = secp256k1.PubkeyParse(pubComp)
+	if !ok{
+		t.Fatalf("secp256k1.PubkeyParse()")		
+	}
+
+	if !bytes.Equal(pub,pub2){
+		t.Fatalf("bytes.Equal(pub,pub2)")
+	}
+
+	} //
+
+	fmt.Printf("priv %x\n",priv)
+	fmt.Printf("pub %x\n",pub)
+	fmt.Printf("pubComp %x\n",pubComp)
+	fmt.Printf("pub2 %x\n",pub2)
+ 	fmt.Printf("ok\n")
+}
+
+
+func TestGenKeyPairSignVerify(t *testing.T) {
+	var ok bool
+	var pub,priv,sig,msg []byte
+	pub,priv,ok=secp256k1.GenKeyPair()
+	msg=make([]byte,32)
+	io.ReadFull(crand.Reader, msg)
+	nonce:=make([]byte,32)
+	io.ReadFull(crand.Reader, nonce[:])
+
+	sig,ok=secp256k1.MsgSign(msg,priv,nonce)
+	if !ok{
+		t.Fatalf("secp256k1.MsgSign()")		
+	}
+
+	ok=secp256k1.MsgSignVerify(msg,sig,pub)
+	if !ok{
+		t.Fatalf("secp256k1.MsgSignVerify")		
+	}
+
+	sig[1]=sig[1]^1
+
+	ok=secp256k1.MsgSignVerify(msg,sig,pub)
+	if ok{
+		t.Fatalf("secp256k1.MsgSignVerify")		
+	}
+
+	fmt.Printf("priv %x\n",priv)
+	fmt.Printf("pub %x\n",pub)
+	fmt.Printf("sig %x\n",sig)
+ 	fmt.Printf("ok %t\n",ok)
+
+}
+
 ```
 
 ## #52 - nil
