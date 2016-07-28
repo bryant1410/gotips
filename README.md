@@ -10,6 +10,7 @@ Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
 
 # Tips list
 
+- 53 - [secp256k1](https://github.com/beyondns/gotips#53---secp256k1)
 - 52 - [nil](https://github.com/beyondns/gotips#52---nil)
 - 51 - [BBQ](https://github.com/beyondns/gotips#51---bbq)
 - 50 - [cool go links](https://github.com/beyondns/gotips#50---cool-go-links)
@@ -63,6 +64,183 @@ Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+
+## #52 - secp256k1
+> 2016-28-07 by [@beyondns](https://github.com/beyondns)  
+
+Use secp256k1 (C library for EC operations on curve secp256k1) in Go  
+
+```bash
+sudo apt-get install autoconf libtool
+git clone https://github.com/bitcoin-core/secp256k1.git
+./autogen.sh && ./configure && make
+sudo make install
+export LD_LIBRARY_PATH=/usr/local/lib
+```
+
+```go
+/*
+#include "secp256k1.h"
+
+#cgo LDFLAGS: -lsecp256k1
+*/
+import "C"
+import "unsafe"
+
+import (
+	crand "crypto/rand"
+	"io"
+	"log"
+)
+
+var (
+	context *C.secp256k1_context
+)
+
+func init() {
+	context = C.secp256k1_context_create(C.SECP256K1_CONTEXT_VERIFY | C.SECP256K1_CONTEXT_SIGN)
+}
+
+
+func getRandNum(n int) []byte {
+	buf := make([]byte, n)
+	_, err := io.ReadFull(crand.Reader, buf)
+	if err != nil {
+		log.Fatalf("io.ReadFull(crand.Reader, buf) %v",err)
+	}
+	return buf
+}
+
+
+
+func GenKeyPair() ([]byte, []byte, bool) {
+	var priv []byte = make([]byte,32)
+	_, err := io.ReadFull(crand.Reader, priv)
+	if err != nil {
+		log.Fatalf("io.ReadFull(crand.Reader, buf) %v",err)
+	}
+	var pub []byte = make([]byte, 64)
+	ret := C.secp256k1_ec_pubkey_create(context,
+		(*C.secp256k1_pubkey)(unsafe.Pointer(&pub[0])),
+		(*C.uchar)(unsafe.Pointer(&priv[0])),
+	)
+
+	if ret != C.int(1) {
+		return nil,nil,false
+	}
+
+	return pub, priv, true
+}
+
+
+
+func PrivkeyVerify(priv []byte) bool {
+	return C.secp256k1_ec_seckey_verify(context,
+		(*C.uchar)(unsafe.Pointer(&priv[0]))) == C.int(1)
+}
+
+
+func GenPrivkey() ([]byte, bool) {
+	const privkeylen=32
+	privkey := make([]byte, privkeylen)
+	var r bool
+	const attlim = 1024
+	for i:=0;i<attlim;i++{
+		io.ReadFull(crand.Reader, privkey)
+		r=PrivkeyVerify(privkey)
+		if !r{
+			continue
+		}
+		break
+	}
+
+	if !r {
+		return nil,r
+	}
+
+	return privkey, true
+}
+
+func GenPubkey(priv []byte) ([]byte, bool) {
+	var pub []byte = make([]byte, 64)
+	ret := C.secp256k1_ec_pubkey_create(context,
+		(*C.secp256k1_pubkey)(unsafe.Pointer(&pub[0])),
+		(*C.uchar)(unsafe.Pointer(&priv[0])),
+	)
+	if ret != C.int(1) {
+		return nil,false
+	}
+	return pub,true
+}
+
+func PubkeySerialize(pub []byte) ([]byte,bool) {
+	var pubComp []byte = make([]byte, 33)
+	var output_len C.size_t = C.size_t(33) 
+	ret := C.secp256k1_ec_pubkey_serialize(
+		context,
+		(*C.uchar)(unsafe.Pointer(&pubComp[0])),
+		&output_len,
+		(*C.secp256k1_pubkey)(unsafe.Pointer(&pub[0])),
+		C.SECP256K1_EC_COMPRESSED,
+	)
+	if ret != C.int(1) {
+		return nil,false
+	}
+	return pubComp,true
+}
+
+
+func PubkeyParse(in []byte) ([]byte, bool) {
+	var pub []byte = make([]byte, 64)
+	var in_len C.size_t = C.size_t(33) 
+	ret := C.secp256k1_ec_pubkey_parse(
+		context,
+		(*C.secp256k1_pubkey)(unsafe.Pointer(&pub[0])),
+		(*C.uchar)(unsafe.Pointer(&in[0])),
+		in_len,
+	)
+	if ret != C.int(1) {
+		return nil,false
+	}
+	return pub,true
+}
+
+
+func MsgSign(msg []byte, priv []byte, nonce []byte) ([]byte, bool) {
+	const siglen = 64
+	sig:=make([]byte,siglen)	
+
+	ret :=C.secp256k1_ecdsa_sign(
+		context,
+		(*C.secp256k1_ecdsa_signature)(unsafe.Pointer(&sig[0])), 
+		(*C.uchar)(unsafe.Pointer(&msg[0])), 
+		(*C.uchar)(unsafe.Pointer(&priv[0])), 
+		&(*C.secp256k1_nonce_function_default), 
+		unsafe.Pointer(&nonce[0]),
+	)
+
+	if ret != C.int(1) {
+		return nil,false
+	}
+	return sig,true
+}
+
+
+func MsgSignVerify(msg []byte, sig []byte, pub []byte) (bool) {
+	ret :=C.secp256k1_ecdsa_verify(
+		context,
+		(*C.secp256k1_ecdsa_signature)(unsafe.Pointer(&sig[0])), 
+		(*C.uchar)(unsafe.Pointer(&msg[0])), 
+		(*C.secp256k1_pubkey)(unsafe.Pointer(&pub[0])),
+	)
+
+	if ret != C.int(1) {
+		return false
+	}
+	return true
+}
+```
 
 ## #52 - nil
 > 2016-22-07 by [@beyondns](https://github.com/beyondns)  
