@@ -66,7 +66,7 @@ Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
 
-## #52 - secp256k1
+## #53 - secp256k1
 > 2016-28-07 by [@beyondns](https://github.com/beyondns)  
 
 Use secp256k1 (C library for EC operations on curve secp256k1) in Go  
