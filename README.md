@@ -10,7 +10,7 @@ Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
 
 # Tips list
 
-- 53 - [secp256k1](https://github.com/beyondns/gotips#53---secp256k1)
+- 53 - [EC operations from bitcoin core](https://github.com/beyondns/gotips#53---EC-operations-from-bitcoin-core)
 - 52 - [nil](https://github.com/beyondns/gotips#52---nil)
 - 51 - [BBQ](https://github.com/beyondns/gotips#51---bbq)
 - 50 - [cool go links](https://github.com/beyondns/gotips#50---cool-go-links)
@@ -65,8 +65,7 @@ Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
-
-## #53 - secp256k1
+## #53 - EC operations from bitcoin core
 > 2016-28-07 by [@beyondns](https://github.com/beyondns)  
 
 Use secp256k1 (C library for EC operations on curve secp256k1) in Go  
