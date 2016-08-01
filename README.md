@@ -6,7 +6,7 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 
 
 > **Support project**
-Send some satoshi 1FPK5sfMkB39sCUDBc9Y4a6GGYEQnAngKF
+Send some satoshi 1P8ZGNV2KLxX6RL3bfX8JHSU8vz8hohp6T
 
 # Tips list
 
