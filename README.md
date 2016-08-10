@@ -5,9 +5,6 @@
 This list of short golang code tips & tricks will help keep collected knowledge in one place.
 
 
-> **Support project**
-Send some satoshi 1P8ZGNV2KLxX6RL3bfX8JHSU8vz8hohp6T
-
 # Tips list
 
 - 53 - [EC operations from bitcoin core](https://github.com/beyondns/gotips#53---ec-operations-from-bitcoin-core)
