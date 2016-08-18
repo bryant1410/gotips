@@ -84,6 +84,7 @@ Ok, embedded key/value storages with file persistence
 * [rocksdb](https://github.com/tecbot/gorocksdb)
 * [buntdb](https://github.com/tidwall/buntdb)
 
+* [Writing a Simple Persistent Key-Value Store in Go](https://www.opsdash.com/blog/persistent-key-value-store-golang.html)
 
 ## #53 - EC operations from bitcoin core
 > 2016-28-07 by [@beyondns](https://github.com/beyondns)  
