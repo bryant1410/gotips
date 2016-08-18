@@ -79,10 +79,10 @@ Go slice and map are awesome. Can be used together, map for fast random access, 
 
 Ok, embedded key/value databases with file persistence  
 
-*[leveldb](https://github.com/syndtr/goleveldb)
-*[boltdb](https://github.com/boltdb/bolt)
-*[rocksdb](https://github.com/tecbot/gorocksdb)
-*[buntdb](https://github.com/tidwall/buntdb)
+* [leveldb](https://github.com/syndtr/goleveldb)
+* [boltdb](https://github.com/boltdb/bolt)
+* [rocksdb](https://github.com/tecbot/gorocksdb)
+* [buntdb](https://github.com/tidwall/buntdb)
 
 
 ## #53 - EC operations from bitcoin core
