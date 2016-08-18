@@ -77,7 +77,7 @@ Go slice and map are awesome. Can be used together, map for fast random access, 
 
 * [Go Data Structures](https://github.com/emirpasic/gods)
 
-Ok, embedded key/value databases with file persistence  
+Ok, embedded key/value storages with file persistence 
 
 * [leveldb](https://github.com/syndtr/goleveldb)
 * [boltdb](https://github.com/boltdb/bolt)
