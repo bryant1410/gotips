@@ -4,9 +4,14 @@
 
 This list of short golang code tips & tricks will help keep collected knowledge in one place.
 
+> **Support the project**
+
+Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
+
 
 # Tips list
 
+- 54 - [NoDB](https://github.com/beyondns/gotips#54---nodb)
 - 53 - [EC operations from bitcoin core](https://github.com/beyondns/gotips#53---ec-operations-from-bitcoin-core)
 - 52 - [nil](https://github.com/beyondns/gotips#52---nil)
 - 51 - [BBQ](https://github.com/beyondns/gotips#51---bbq)
@@ -61,6 +66,24 @@ This list of short golang code tips & tricks will help keep collected knowledge 
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+## #54 - NoDB
+> 2016-18-08 by [@beyondns](https://github.com/beyondns)  
+
+A lot of talks which db to use, sql, nosql, blah.  
+NoDB = not only database, simple data structures are best friends!  
+
+Go slice and map are awesome. Can be used together, map for fast random access, slice for ordered access.
+
+* [Go Data Structures](https://github.com/emirpasic/gods)
+
+Ok, embedded key/value databases with file persistence  
+
+*[leveldb](https://github.com/syndtr/goleveldb)
+*[boltdb](https://github.com/boltdb/bolt)
+*[rocksdb](https://github.com/tecbot/gorocksdb)
+*[buntdb](https://github.com/tidwall/buntdb)
+
 
 ## #53 - EC operations from bitcoin core
 > 2016-28-07 by [@beyondns](https://github.com/beyondns)  
