@@ -11,6 +11,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 # Tips list
 
+- 55 - [Dynamic time intervals](https://github.com/beyondns/gotips#55---dynamic-time-intervals)
 - 54 - [NoDB](https://github.com/beyondns/gotips#54---nodb)
 - 53 - [EC operations from bitcoin core](https://github.com/beyondns/gotips#53---ec-operations-from-bitcoin-core)
 - 52 - [nil](https://github.com/beyondns/gotips#52---nil)
@@ -66,6 +67,71 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+## #55 - Dynamic time intervals
+> 2016-31-08 by [@beyondns](https://github.com/beyondns)
+
+
+```go
+
+package main
+
+import (
+	"log"
+	"time"
+)
+
+func main() {
+
+	const WorkInterval = time.Second
+
+	counter := 0
+	dynoInterval := WorkInterval
+	for {
+		select {
+		case <-time.After(dynoInterval):
+			counter++
+			log.Printf("%d--enter %v", counter,dynoInterval)
+			c, err := doSomeWork(counter)
+			log.Printf("%d--exit %v",counter,dynoInterval)
+
+			if err != nil {
+				dynoInterval *= 2
+				continue
+			}
+			if c == 0 {
+				dynoInterval *= 2
+			} else {
+				dynoInterval = WorkInterval
+			}
+		}
+	}
+
+}
+
+func doSomeWork(c int) (int, error) {
+	if c%3==0{
+		time.Sleep(2 * time.Second)
+	return c,nil
+	}
+	return 0, nil
+}
+
+```
+```bash
+2016/08/31 11:58:13 1--enter 1s
+2016/08/31 11:58:13 1--exit 1s
+2016/08/31 11:58:15 2--enter 2s
+2016/08/31 11:58:15 2--exit 2s
+2016/08/31 11:58:19 3--enter 4s
+2016/08/31 11:58:21 3--exit 4s
+2016/08/31 11:58:22 4--enter 1s
+2016/08/31 11:58:22 4--exit 1s
+2016/08/31 11:58:24 5--enter 2s
+2016/08/31 11:58:24 5--exit 2s
+```
+
+
 
 ## #54 - NoDB
 > 2016-18-08 by [@beyondns](https://github.com/beyondns)  
