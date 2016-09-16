@@ -11,7 +11,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 # Tips list
 
-- 57 - [Multiple concurent http requests with timeout](https://github.com/beyondns/gotips#57---multiple-concurent-http-requests-with-timeout)
+- 57 - [Multiple concurrent http requests with timeout](https://github.com/beyondns/gotips#57---multiple-concurrent-http-requests-with-timeout)
 - 56 - [Inplace struct](https://github.com/beyondns/gotips#56---inplace-struct)
 - 55 - [Dynamic time intervals](https://github.com/beyondns/gotips#55---dynamic-time-intervals)
 - 54 - [NoDB](https://github.com/beyondns/gotips#54---nodb)
@@ -70,7 +70,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
-## #57 - Multiple concurent http requests with timeout
+## #57 - Multiple concurrent http requests with timeout
 > 2016-16-09 by [@beyondns](https://github.com/beyondns)
 ```go
 package main
@@ -220,7 +220,6 @@ func doHandler(w http.ResponseWriter, r *http.Request) {
 
 ## #56 - Inplace struct
 > 2016-15-09 by [@beyondns](https://github.com/beyondns)
-
 
 ```go
 package main
