@@ -11,6 +11,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 # Tips list
 
+- 57 - [Multiple concurent http requests with timeout](https://github.com/beyondns/gotips#57---multiple-concurent-http-requests-with-timeout)
 - 56 - [Inplace struct](https://github.com/beyondns/gotips#56---inplace-struct)
 - 55 - [Dynamic time intervals](https://github.com/beyondns/gotips#55---dynamic-time-intervals)
 - 54 - [NoDB](https://github.com/beyondns/gotips#54---nodb)
@@ -69,9 +70,156 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
+## #57 - Multiple concurent http requests with timeout
+> 2016-16-09 by [@beyondns](https://github.com/beyondns)
+```go
+package main
+
+import (
+	"encoding/json"
+	"flag"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"sort"
+	"sync/atomic"
+	"time"
+	"strings"
+)
+
+const (
+	MaxRequestWaitTime = time.Millisecond * 500
+)
+
+func main() {
+	addr := flag.String("addr", ":8080", "http listen address")
+	flag.Parse()
+
+	http.HandleFunc("/do", apiHandler)
+
+	log.Printf("listen and serve %s", *addr)
+	log.Fatal(http.ListenAndServe(*addr, nil))
+}
+
+
+
+func doHandler(w http.ResponseWriter, r *http.Request) {
+	urls, ok := r.URL.Query()["u"]
+	if !ok {
+		http.Error(w, "u is not specified", http.StatusBadRequest)
+		return
+	}
+
+	var results [][]byte
+
+	var wgc uint32 = 0
+	var wgn uint32 = uint32(len(urls))
+
+	reqDoneFlags := make([]bool, len(urls))
+	wgCanceled := false
+
+	done := make(chan struct{})
+	cancel := make(chan struct{})
+
+	for i, u := range urls {
+		go func(u string, i int) {
+
+			defer func() {
+				atomic.AddUint32(&wgc, 1)
+				if wgc == wgn && !wgCanceled {
+					done <- struct{}{}
+				}
+			}()
+
+			req, err := http.NewRequest("GET", u, nil)
+			if err != nil {
+				log.Printf("http.NewRequest %v error %v", u, err)
+				return
+			}
+			req.Header.Add("Content-Type", "application/json")
+
+			tr := &http.Transport{}
+			client := &http.Client{Transport: tr}
+			clientDone := false
+
+			exit := make(chan struct{})
+			defer close(exit)
+			go func() {
+				select {
+				case <-cancel:
+					if !clientDone {
+						tr.CancelRequest(req)
+					}
+				case <-exit:
+				}
+			}()
+
+			resp, err := client.Do(req)
+			clientDone = true
+			if err != nil {
+				log.Printf("http get %v error %v or timeout", u, err)
+				return
+			}
+			defer func() {
+				if resp!=nil && resp.Body != nil {
+					resp.Body.Close()
+				}
+			}()
+			if resp.StatusCode != 200 {
+				log.Printf("http get %v error status %v", u, resp.StatusCode)
+				return
+			}
+
+			results[i], err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				log.Printf("url %s body error %v", u, err)
+				return
+			}
+			reqDoneFlags[i] = !wgCanceled
+			//log.Printf("%s %v", u,results[i])
+			if reqDoneFlags[i]{
+				log.Printf("%s ok", u)
+			}
+		}(u, i)
+	}
+
+	select {
+	case <-time.After(MaxRequestWaitTime):
+		wgCanceled = true
+		close(cancel)
+		//log.Printf("wg timeout")
+	case <-done:
+	}
+
+	log.Printf("results: %v", results)
+
+	var allResults []byte
+	for i, r := range results {
+		if reqDoneFlags[i] {
+			allResults=append(allResults,r[i]...)
+		}
+	}
+
+	doneUrls:=""
+	for i, u := range urls {
+		if reqDoneFlags[i]{
+			if len(doneUrls)>0{
+				doneUrls+=","
+			}
+			doneUrls+=u[strings.LastIndex(u,"/")+1:]
+		}
+	}
+	w.Header().Set("Done-Urls", doneUrls)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(allResults)
+
+}
+```
+
 
 ## #56 - Inplace struct
-> 2016-31-08 by [@beyondns](https://github.com/beyondns)
+> 2016-15-09 by [@beyondns](https://github.com/beyondns)
 
 
 ```go
