@@ -72,7 +72,9 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 ## #57 - Multiple concurrent http requests with timeout
 > 2016-16-09 by [@beyondns](https://github.com/beyondns)
+
 ```go
+
 package main
 
 import (
@@ -215,6 +217,7 @@ func doHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(allResults)
 
 }
+
 ```
 
 
@@ -222,6 +225,7 @@ func doHandler(w http.ResponseWriter, r *http.Request) {
 > 2016-15-09 by [@beyondns](https://github.com/beyondns)
 
 ```go
+
 package main
 
 import (
@@ -234,6 +238,7 @@ func main() {
 	bin,err:=json.Marshal(&struct {Name string}{Name: name})
 	fmt.Printf("%s %v",string(bin),err)
 }
+
 ```
 
 ## #55 - Dynamic time intervals
