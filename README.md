@@ -90,143 +90,143 @@ export PATH=$GOPATH/bin:$PATH
 package main
 
 import (
-	"encoding/json"
-	"flag"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"sort"
-	"sync/atomic"
-	"time"
-	"strings"
+    _"encoding/json"
+    "flag"
+    "io/ioutil"
+    "log"
+    "net/http"
+    _"sort"
+    "sync/atomic"
+    "time"
+    "strings"
 )
 
 const (
-	MaxRequestWaitTime = time.Millisecond * 500
+    MaxRequestWaitTime = time.Millisecond * 15000
 )
 
 func main() {
-	addr := flag.String("addr", ":8080", "http listen address")
-	flag.Parse()
+    addr := flag.String("addr", ":8080", "http listen address")
+    flag.Parse()
 
-	http.HandleFunc("/do", apiHandler)
+    http.HandleFunc("/do", doHandler)
 
-	log.Printf("listen and serve %s", *addr)
-	log.Fatal(http.ListenAndServe(*addr, nil))
+    log.Printf("listen and serve %s", *addr)
+    log.Fatal(http.ListenAndServe(*addr, nil))
 }
 
 
 
 func doHandler(w http.ResponseWriter, r *http.Request) {
-	urls, ok := r.URL.Query()["u"]
-	if !ok {
-		http.Error(w, "u is not specified", http.StatusBadRequest)
-		return
-	}
+    urls, ok := r.URL.Query()["u"]
+    if !ok {
+        http.Error(w, "u is not specified", http.StatusBadRequest)
+        return
+    }
 
-	var results [][]byte
+    results:=make([][]byte,len(urls))
 
-	var wgc uint32 = 0
-	var wgn uint32 = uint32(len(urls))
+    var wgc uint32 = 0
+    var wgn uint32 = uint32(len(urls))
 
-	reqDoneFlags := make([]bool, len(urls))
-	wgCanceled := false
+    reqDoneFlags := make([]bool, len(urls))
+    wgCanceled := false
 
-	done := make(chan struct{})
-	cancel := make(chan struct{})
+    done := make(chan struct{})
+    cancel := make(chan struct{})
 
-	for i, u := range urls {
-		go func(u string, i int) {
+    for i, u := range urls {
+        go func(u string, i int) {
 
-			defer func() {
-				atomic.AddUint32(&wgc, 1)
-				if wgc == wgn && !wgCanceled {
-					done <- struct{}{}
-				}
-			}()
+            defer func() {
+                atomic.AddUint32(&wgc, 1)
+                if wgc == wgn && !wgCanceled {
+                    done <- struct{}{}
+                }
+            }()
 
-			req, err := http.NewRequest("GET", u, nil)
-			if err != nil {
-				log.Printf("http.NewRequest %v error %v", u, err)
-				return
-			}
-			req.Header.Add("Content-Type", "application/json")
+            req, err := http.NewRequest("GET", u, nil)
+            if err != nil {
+                log.Printf("http.NewRequest %v error %v", u, err)
+                return
+            }
+            req.Header.Add("Content-Type", "application/json")
 
-			tr := &http.Transport{}
-			client := &http.Client{Transport: tr}
-			clientDone := false
+            tr := &http.Transport{}
+            client := &http.Client{Transport: tr}
+            clientDone := false
 
-			exit := make(chan struct{})
-			defer close(exit)
-			go func() {
-				select {
-				case <-cancel:
-					if !clientDone {
-						tr.CancelRequest(req)
-					}
-				case <-exit:
-				}
-			}()
+            exit := make(chan struct{})
+            defer close(exit)
+            go func() {
+                select {
+                case <-cancel:
+                    if !clientDone {
+                        tr.CancelRequest(req)
+                    }
+                case <-exit:
+                }
+            }()
 
-			resp, err := client.Do(req)
-			clientDone = true
-			if err != nil {
-				log.Printf("http get %v error %v or timeout", u, err)
-				return
-			}
-			defer func() {
-				if resp!=nil && resp.Body != nil {
-					resp.Body.Close()
-				}
-			}()
-			if resp.StatusCode != 200 {
-				log.Printf("http get %v error status %v", u, resp.StatusCode)
-				return
-			}
+            resp, err := client.Do(req)
+            clientDone = true
+            if err != nil {
+                log.Printf("http get %v error %v or timeout", u, err)
+                return
+            }
+            defer func() {
+                if resp!=nil && resp.Body != nil {
+                    resp.Body.Close()
+                }
+            }()
+            if resp.StatusCode != 200 {
+                log.Printf("http get %v error status %v", u, resp.StatusCode)
+                return
+            }
 
-			results[i], err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				log.Printf("url %s body error %v", u, err)
-				return
-			}
-			reqDoneFlags[i] = !wgCanceled
-			//log.Printf("%s %v", u,results[i])
-			if reqDoneFlags[i]{
-				log.Printf("%s ok", u)
-			}
-		}(u, i)
-	}
+            results[i], err = ioutil.ReadAll(resp.Body)
+            if err != nil {
+                log.Printf("url %s body error %v", u, err)
+                return
+            }
+            reqDoneFlags[i] = !wgCanceled
+            //log.Printf("%s %v", u,results[i])
+            if reqDoneFlags[i]{
+                log.Printf("%s ok", u)
+            }
+        }(u, i)
+    }
 
-	select {
-	case <-time.After(MaxRequestWaitTime):
-		wgCanceled = true
-		close(cancel)
-		//log.Printf("wg timeout")
-	case <-done:
-	}
+    select {
+    case <-time.After(MaxRequestWaitTime):
+        wgCanceled = true
+        close(cancel)
+        //log.Printf("wg timeout")
+    case <-done:
+    }
 
-	log.Printf("results: %v", results)
+    log.Printf("results: %v", results)
 
-	var allResults []byte
-	for i, r := range results {
-		if reqDoneFlags[i] {
-			allResults=append(allResults,r[i]...)
-		}
-	}
+    var allResults []byte
+    for i, r := range results {
+        if reqDoneFlags[i] {
+            allResults=append(allResults,r...)
+        }
+    }
 
-	doneUrls:=""
-	for i, u := range urls {
-		if reqDoneFlags[i]{
-			if len(doneUrls)>0{
-				doneUrls+=","
-			}
-			doneUrls+=u[strings.LastIndex(u,"/")+1:]
-		}
-	}
-	w.Header().Set("Done-Urls", doneUrls)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(allResults)
+    doneUrls:=""
+    for i, u := range urls {
+        if reqDoneFlags[i]{
+            if len(doneUrls)>0{
+                doneUrls+=","
+            }
+            doneUrls+=u[strings.LastIndex(u,"/")+1:]
+        }
+    }
+    w.Header().Set("Done-Urls", doneUrls)
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    w.Write(allResults)
 
 }
 
