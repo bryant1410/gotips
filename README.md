@@ -11,6 +11,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 # Tips list
 
+- 58 - [set go env](https://github.com/beyondns/gotips#58---set-go-env)
 - 57 - [Multiple concurrent http requests with timeout](https://github.com/beyondns/gotips#57---multiple-concurrent-http-requests-with-timeout)
 - 56 - [Inplace struct](https://github.com/beyondns/gotips#56---inplace-struct)
 - 55 - [Dynamic time intervals](https://github.com/beyondns/gotips#55---dynamic-time-intervals)
@@ -69,6 +70,17 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+## #58 - set go env
+> 2016-31-08 by [@beyondns](https://github.com/beyondns)
+
+```bash
+export GOROOT=/opt/go1.7.1
+export PATH=$GOROOT/bin:$PATH
+export GOPATH=$HOME/go
+export PATH=$GOPATH/bin:$PATH
+
+```
 
 ## #57 - Multiple concurrent http requests with timeout
 > 2016-16-09 by [@beyondns](https://github.com/beyondns)
