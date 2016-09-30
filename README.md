@@ -11,6 +11,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 # Tips list
 
+- 59 - [go tools usage](https://github.com/beyondns/gotips#59---go-tools-usage)
 - 58 - [set go env](https://github.com/beyondns/gotips#58---set-go-env)
 - 57 - [Multiple concurrent http requests with timeout](https://github.com/beyondns/gotips#57---multiple-concurrent-http-requests-with-timeout)
 - 56 - [Inplace struct](https://github.com/beyondns/gotips#56---inplace-struct)
@@ -71,8 +72,25 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
+## #59 - go tools usage
+> 2016-30-09 by [@beyondns](https://github.com/beyondns)
+
+```bash
+go build -gcflags="-S -N"   // go tool compile -help
+go build -x   //  see all the invocations
+go test -race   //  race detector
+go test -run=Func1   // run TestFunc1 
+go get -u   // update
+go get -d   // clone
+go get -t   // get deps for test
+go list -f  // list packages with a custom format
+```
+
+* [race-detector](https://blog.golang.org/race-detector)
+* [go-tool-flags](http://golang.rakyll.org/go-tool-flags)
+
 ## #58 - set go env
-> 2016-31-08 by [@beyondns](https://github.com/beyondns)
+> 2016-20-09 by [@beyondns](https://github.com/beyondns)
 
 ```bash
 export GOROOT=/opt/go1.7.1
