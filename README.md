@@ -11,6 +11,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 # Tips list
 
+- 60 - [custom queue](https://github.com/beyondns/gotips#60---custom-queue)
 - 59 - [go tools usage](https://github.com/beyondns/gotips#59---go-tools-usage)
 - 58 - [set go env](https://github.com/beyondns/gotips#58---set-go-env)
 - 57 - [Multiple concurrent http requests with timeout](https://github.com/beyondns/gotips#57---multiple-concurrent-http-requests-with-timeout)
@@ -71,6 +72,161 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+## #60 - custom queue
+> 2016-30-10 by [@beyondns](https://github.com/beyondns)
+
+Custom queue without duplicates  
+
+xq.go  
+
+```go
+package xq
+
+import (
+	"errors"
+	"sync"
+)
+
+// X queue
+
+type (
+	XQ struct {
+		Q  []XQItem
+		H  int // head
+		T  int // tail
+		L  int // len 
+		M  map[string]XQItem
+		Mx sync.Mutex
+	}
+
+	XQItem interface{
+		Hash() string
+	}
+)
+
+
+func NewXQ(l int) *XQ {
+	q := &XQ{
+		Q: make([]XQItem, l),
+		M: make(map[string]XQItem),
+		L: l,
+	}
+	return q
+}
+
+func (q *XQ) Push(x XQItem) error {
+	var err error
+	q.Mx.Lock()
+	h:=x.Hash()
+	if _, ok := q.M[h]; ok {
+		err = errors.New("exists")
+	} else {
+		q.M[h] = x
+		q.Q[q.T] = x
+		q.T++
+		if q.T == q.L {
+			q.T = 0
+		}
+		if q.H == q.T {
+			if q.T == 0 {
+				q.T = q.L - 1
+			} else {
+				q.T--
+			}
+			err = errors.New("overflow")
+		}
+	}
+	q.Mx.Unlock()
+	return err
+}
+
+func (q *XQ) Pop() (XQItem, error) {
+	var err error
+	var x XQItem
+	q.Mx.Lock()
+	if q.H == q.T {
+		err = errors.New("empty")
+	} else {
+		x = q.Q[q.H]
+		q.H++
+		if q.H == q.L {
+			q.H = 0
+		}
+		h:=x.Hash()
+		delete(q.M, h)
+	}
+	q.Mx.Unlock()
+	return x, err
+}
+
+func (q *XQ) Len() (l int) {
+	q.Mx.Lock()
+	l = len(q.M)
+	q.Mx.Unlock()
+	return l
+}
+```
+
+xq_test.go  
+
+```go
+package xq
+
+import (
+	"log"
+	"time"
+	"crypto/sha256"
+	_"fmt"
+	"math/rand"
+	"testing"
+	"bytes"
+	"encoding/binary"
+	"encoding/hex"
+)
+
+type Data struct {
+	Nonce int64
+	Timestamp int64
+}
+
+func (d Data) Hash() string {
+	buf := new(bytes.Buffer)
+	binary.Write(buf, binary.LittleEndian, d.Nonce)
+	h:=sha256.Sum256(buf.Bytes())
+	return hex.EncodeToString(h[:])
+}
+
+func TestXQ(t *testing.T) {
+	q := NewXQ(100)
+	c := 0
+	for i := 0; i < 10; i++ {
+		n := rand.Intn(10)
+		for j := 0; j < n; j++ {
+			d := &Data{
+				Nonce:int64(c),
+				Timestamp:time.Now().UTC().UnixNano(),
+			}
+			d.Nonce = int64(c)
+			c++
+			q.Push(d)
+		}
+	}
+	l:=q.Len()
+	for i := 0; i < l; i++ {
+		d,err:=q.Pop()
+		if err!=nil{
+			t.Fatalf("q.Pop() %v", err)
+		}
+		d2:=d.(*Data) 
+		if int64(i)!=d2.Nonce{
+			t.Fatalf("i!=d2.Nonce %d!=%d", i,d2.Nonce)
+		}		
+		log.Printf("%d %v",i,time.Unix(0,d2.Timestamp).UTC())
+	}
+
+}
+```
 
 ## #59 - go tools usage
 > 2016-30-09 by [@beyondns](https://github.com/beyondns)
