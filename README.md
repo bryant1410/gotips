@@ -11,6 +11,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 # Tips list
 
+- 61 - [log with line number](https://github.com/beyondns/gotips#60---log-with-line-number)
 - 60 - [custom queue](https://github.com/beyondns/gotips#60---custom-queue)
 - 59 - [go tools usage](https://github.com/beyondns/gotips#59---go-tools-usage)
 - 58 - [set go env](https://github.com/beyondns/gotips#58---set-go-env)
@@ -72,6 +73,32 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+## #61 - log with line number
+> 2016-17-11 by [@beyondns](https://github.com/beyondns)
+
+```go
+
+package main
+
+import(
+	"path"
+	"runtime"
+	"fmt"
+	"log"
+)
+
+func debugPoint() string {
+    _, file, line, _ := runtime.Caller(1)
+    return fmt.Sprintf("%s %d", path.Base(file), line)
+}
+
+
+func main() {
+	log.Println(debugPoint())
+}
+
+```
 
 ## #60 - custom queue
 > 2016-30-10 by [@beyondns](https://github.com/beyondns)
