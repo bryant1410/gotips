@@ -11,7 +11,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 # Tips list
 
-- 61 - [log with line number](https://github.com/beyondns/gotips#60---log-with-line-number)
+- 61 - [log with line number](https://github.com/beyondns/gotips#61---log-with-line-number)
 - 60 - [custom queue](https://github.com/beyondns/gotips#60---custom-queue)
 - 59 - [go tools usage](https://github.com/beyondns/gotips#59---go-tools-usage)
 - 58 - [set go env](https://github.com/beyondns/gotips#58---set-go-env)
