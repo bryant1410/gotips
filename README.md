@@ -93,7 +93,7 @@ import(
 
 func debugPoint() string {
     pc, file, line, _ := runtime.Caller(1)
-    return fmt.Sprintf("%v %s %s %d", time.Now(),
+    return fmt.Sprintf("\033[31m%v %s %s %d\x1b[0m", time.Now(),
     	runtime.FuncForPC(pc).Name(), path.Base(file), line)
 }
 
