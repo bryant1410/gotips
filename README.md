@@ -124,8 +124,15 @@ func main() {
 
 	log.Printf("ch end %v", err)
 }
-
 ```
+
+```bash
+2016/12/15 12:05:28 ctx done
+2016/12/15 12:05:28 contex end context deadline exceeded
+2016/12/15 12:05:28 ch done
+2016/12/15 12:05:28 ch end ch timeout
+```
+
 
 ## #61 - log with line number and func name
 > 2016-17-11 by [@beyondns](https://github.com/beyondns)
@@ -165,6 +172,11 @@ func main() {
 
 }
 
+```
+
+```bash
+2016/12/15 12:06:42 log.go:26: log with flags
+2016-12-15 12:06:42.542429907 +0300 MSK main.f log.go 18
 ```
 
 ## #60 - custom queue
