@@ -11,6 +11,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 # Tips list
 
+- 62 - [contex vs chan](https://github.com/beyondns/gotips#62---context-vs-chan)
 - 61 - [log with line number and func name](https://github.com/beyondns/gotips#61---log-with-line-number-and-func-name)
 - 60 - [custom queue](https://github.com/beyondns/gotips#60---custom-queue)
 - 59 - [go tools usage](https://github.com/beyondns/gotips#59---go-tools-usage)
@@ -73,6 +74,58 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+## #62 - context vs chan
+> 2016-15-12 by [@beyondns](https://github.com/beyondns)
+
+```go
+package main
+
+import (
+	"errors"
+	"golang.org/x/net/context"
+	"log"
+	"time"
+)
+
+func main() {
+
+	timeout := time.Millisecond
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+
+	go func(context.Context) {
+		<-ctx.Done()
+		log.Printf("ctx done")
+	}(ctx)
+
+	//cancel()
+	_ = cancel
+
+	time.Sleep(timeout * 2)
+
+	log.Printf("contex end %v", ctx.Err())
+
+	ch := make(chan struct{})
+
+	var err error
+	go func(chan struct{}) {
+		select {
+		case <-time.After(timeout):
+			err = errors.New("ch timeout")
+		case <-ch:
+		}
+		log.Printf("ch done")
+	}(ch)
+
+	//ch<-struct{}{}
+
+	time.Sleep(timeout * 2)
+
+	log.Printf("ch end %v", err)
+}
+
+```
 
 ## #61 - log with line number and func name
 > 2016-17-11 by [@beyondns](https://github.com/beyondns)
