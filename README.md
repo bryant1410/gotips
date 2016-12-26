@@ -1108,16 +1108,29 @@ func main() {
 ## #48 - ev_loop vs co_routine
 > 2016-07-06 by [@beyondns](https://github.com/beyondns)  
 
-This tip was promised, stay tuned.
+It's super simple to implement udp/tcp/http etc. servers in #Go but pretty complicated in #C.  
 
-It's super simple to implement udp/tcp/http etc. servers in #Go but how it vs plain event loop in C.  
+* [beast](https://github.com/vinniefalco/Beast)
+* [proxygen](https://github.com/facebook/proxygen)
 
-ev_loop.c
-```c
-```
-
-co_routine.go
+go_http_server.go
 ```go
+package main
+
+import (
+	"io"
+	"net/http"
+	"log"
+)
+
+func main() {
+	http.HandleFunc("/", func (w http.ResponseWriter, r *http.Request) {
+		log.Println(r.RemoteAddr, r.Method, r.URL)
+		io.WriteString(w, "Ok")
+	})
+	log.Println("ListenAndServe on 8000")
+	log.Fatal(http.ListenAndServe(":8000", nil))
+}
 ```
 
 ## #47 - Use C for computation intensive operations
