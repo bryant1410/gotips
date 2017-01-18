@@ -11,6 +11,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 # Tips list
 
+- 63 - [chan with timeout](https://github.com/beyondns/gotips#63---chan-with-timeout)
 - 62 - [contex vs chan](https://github.com/beyondns/gotips#62---context-vs-chan)
 - 61 - [log with line number and func name](https://github.com/beyondns/gotips#61---log-with-line-number-and-func-name)
 - 60 - [custom queue](https://github.com/beyondns/gotips#60---custom-queue)
@@ -74,6 +75,68 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+## #63 - chan with timeout
+> 2017-01-18 by [@beyondns](https://github.com/beyondns)
+
+```go
+package main
+
+package main
+
+import (
+	"errors"
+	"log"
+	"time"
+)
+
+func notifyWait(ch chan interface{}, waitInterval time.Duration) (interface{}, error) {
+	log.Printf("notifyWait enter")
+	defer log.Printf("notifyWait exit")
+	select {
+	case <-time.After(waitInterval):
+		return nil, errors.New("notifyWait time out")
+	case data := <-ch:
+		return data, nil
+	}
+}
+
+func main() {
+
+	ch := make(chan interface{}) // chan with no buffer
+	go func() {
+		data, err := notifyWait(ch, time.Second)
+		if err != nil {
+			log.Printf("error %v", err)
+			return
+		}
+		log.Printf("data %v", data)
+	}()
+
+	ch <- struct{}{}
+	time.Sleep(time.Second * 2)
+
+	go func() {
+		data, err := notifyWait(ch, time.Second)
+		if err != nil {
+			log.Printf("error %v", err)
+			return
+		}
+		log.Printf("data %v", data)
+	}()
+	time.Sleep(time.Second * 2)
+
+}
+```
+
+```bash
+2017/01/18 11:13:57 notifyWait enter
+2017/01/18 11:13:57 notifyWait exit
+2017/01/18 11:13:57 data {}
+2017/01/18 11:13:59 notifyWait enter
+2017/01/18 11:14:00 notifyWait exit
+2017/01/18 11:14:00 error notifyWait time out
+```
 
 ## #62 - context vs chan
 > 2016-15-12 by [@beyondns](https://github.com/beyondns)
