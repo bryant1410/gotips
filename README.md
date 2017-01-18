@@ -82,8 +82,6 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 ```go
 package main
 
-package main
-
 import (
 	"errors"
 	"log"
