@@ -78,8 +78,8 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 
 
-[gotips#32..#63](https://github.com/beyondns/gotips/blob/master/tips64.md)
-[gotips #0..#31](https://github.com/beyondns/gotips/blob/master/tips32.md)
+[gotips#32..#63](https://github.com/beyondns/gotips/blob/master/tips64.md)  
+[gotips #0..#31](https://github.com/beyondns/gotips/blob/master/tips32.md)  
 
 
 ### General Golang links
