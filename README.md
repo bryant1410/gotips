@@ -11,6 +11,8 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 # Tips list
 
+
+- 64 - [go vs rust](https://github.com/beyondns/gotips#64---go-vs-rust)
 - 63 - [chan with timeout](https://github.com/beyondns/gotips/blob/master/tips64.md#63---chan-with-timeout)
 - 62 - [contex vs chan](https://github.com/beyondns/gotips/blob/master/tips64.md#62---context-vs-chan)
 - 61 - [log with line number and func name](https://github.com/beyondns/gotips/blob/master/tips64.md#61---log-with-line-number-and-func-name)
@@ -76,7 +78,12 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
+## #64 - go vs rust
+> 2017-01-20 by [@beyondns](https://github.com/beyondns)
 
+
+* [rust vs go](https://blog.ntpsec.org/2017/01/18/rust-vs-go.html)
+* [c2go](https://github.com/rsc/c2go)
 
 [gotips#32..#63](https://github.com/beyondns/gotips/blob/master/tips64.md)  
 [gotips #0..#31](https://github.com/beyondns/gotips/blob/master/tips32.md)  
