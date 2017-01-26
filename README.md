@@ -12,6 +12,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 # Tips list
 
 
+- 65 - [grpc](https://github.com/beyondns/gotips#65---grpc)
 - 64 - [go vs rust](https://github.com/beyondns/gotips#64---go-vs-rust)
 - 63 - [chan with timeout](https://github.com/beyondns/gotips/blob/master/tips64.md#63---chan-with-timeout)
 - 62 - [contex vs chan](https://github.com/beyondns/gotips/blob/master/tips64.md#62---context-vs-chan)
@@ -77,6 +78,117 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+## #65 - grpc
+> 2017-01-26 by [@beyondns](https://github.com/beyondns)
+
+```bash
+syntax = "proto3";
+
+package remote;
+
+service Inter {
+  rpc HandShake (HandShakeData) returns (HandShakeResult) {}
+}
+
+message HandShakeData {
+  int32 no = 1;
+  string query = 2;
+}
+
+message HandShakeResult {
+  int32 no = 1;
+  string res = 2;
+}
+
+```
+
+```go
+
+package main
+
+import (
+	"flag"
+	"log"
+	"net"
+	"strings"
+
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+	pb "./remote"
+)
+
+// go get google.golang.org/grpc
+// go get -u github.com/golang/protobuf/{proto,protoc-gen-go}
+// protoc -I ./remote/ ./remote/rem.proto  --go_out=plugins=grpc:remote
+
+type server struct{
+	host *string
+}
+
+func (s *server) HandShake(ctx context.Context, in *pb.HandShakeData) (*pb.HandShakeResult, error) {
+	log.Printf("HandShake %v", in)
+	res := &pb.HandShakeResult{
+		Res: fmt.Sprintf("Response from %s to query %s" + s.host,in.Query),
+	}
+	return res, nil
+}
+
+// ./node -host 127.0.0.1:50051
+// ./node -host 127.0.0.1:50052
+
+func main() {
+	host := flag.String("host", "127.0.0.1:50051", "host host:port")
+	nodes := flag.String("nodes", "127.0.0.1:50051,127.0.0.1:50052,127.0.0.1:50053",
+		"[host:port,host:port,...]")
+
+	flag.Parse()
+
+	go func() {
+		lis, err := net.Listen("tcp", *host)
+		if err != nil {
+			log.Fatalf("failed to listen: %v", err)
+		}
+		s := grpc.NewServer()
+		pb.RegisterInterServer(s, &server{host:host})
+		reflection.Register(s)
+		log.Printf("Serve...")
+		if err := s.Serve(lis); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+	}()
+
+	for _, n := range strings.Split(*nodes, ",") {
+		if n != *host {
+			go func(n string) {
+
+				conn, err := grpc.Dial(n, grpc.WithInsecure())
+				if err != nil {
+					log.Printf("did not connect:%s %v", n, err)
+					return
+				}
+				defer conn.Close()
+				c := pb.NewInterClient(conn)
+
+				r, err := c.HandShake(context.Background(), 
+					&pb.HandShakeData{No: 1, Query: "hello"})
+				if err != nil {
+					log.Printf("could not HandShake: %v", err)
+					return
+				}
+				log.Printf("HandShake:%s %s", n, r.Res)
+
+			}(n)
+		}
+	}
+
+	select {}
+}
+
+```
+* [grpc.io](grpc.io)
+
 
 ## #64 - go vs rust
 > 2017-01-20 by [@beyondns](https://github.com/beyondns)
