@@ -196,6 +196,7 @@ func main() {
 
 * [tokio](https://tokio.rs/)
 * [rust vs go](https://blog.ntpsec.org/2017/01/18/rust-vs-go.html)
+* [Hacker News Rust vs. Go (ntpsec.org)](https://news.ycombinator.com/item?id=13430108)
 * [c2go](https://github.com/rsc/c2go)
 
 [gotips#32..#63](https://github.com/beyondns/gotips/blob/master/tips64.md)  
