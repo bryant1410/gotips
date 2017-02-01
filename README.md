@@ -12,6 +12,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 # Tips list
 
 
+- 66 - [json rpc over any transport](https://github.com/beyondns/gotips#66---json-rpc-over-any-transport)
 - 65 - [grpc](https://github.com/beyondns/gotips#65---grpc)
 - 64 - [go vs rust](https://github.com/beyondns/gotips#64---go-vs-rust)
 - 63 - [chan with timeout](https://github.com/beyondns/gotips/blob/master/tips64.md#63---chan-with-timeout)
@@ -78,6 +79,120 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+## #65 - json rpc over any transport
+> 2017-01-31 by [@beyondns](https://github.com/beyondns)
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"	
+	"log"
+)
+
+const transpostJSON = `
+{
+"version": "0.1", 
+"id": "1234567", 
+"method": "transpost", 
+"params": {
+	"data":{
+		"timestamp":"2017-01-20T15:50:41.163Z"
+	},
+	"hash":"acfd55c995be410bbda4ee78f921608db42b3c10a5f44a1a5d15b1c0a7138e0e",
+	"signs": [
+  	{
+   		"pub": "03ab4b14fe08f81e56af1d731f6c22c0a860c2c3c9c7b91d9c190aa602cf97f668",
+   		"sign": "bfb7fc15f336b802310d9c38288ecacc0c5fadda31a564c120e63e6ee5a4d8ae5beaaeae75007d1fac97e77520087f86823f98a25b2f3be51eac47fec862c2ee",
+   		"date": "2017-01-31T18:38:24.057Z"
+  	}
+ 	]
+}
+}
+`
+
+type (
+
+	RemoteRequest struct {
+		Version string          `json:"version"`
+		Id      string          `json:"id,omitempty"`
+		Method  string          `json:"method"`
+		Params  json.RawMessage `json:"params,omitempty"`
+	}
+
+	Transaction struct {
+		Data  TransData `json:"data"`
+		Hash  string       `json:"hash"`
+		Signs []TransSign     `json:"signs"`
+	}
+	TransData struct {
+		Timestamp string `json:"timestamp"`
+	}
+	TransSign struct {
+		Pub  string `json:"pub"`
+		Sign string `json:"sign"`
+		Date string `json:"date"`
+	}
+
+	RemoteResponse struct {
+		Version string `json:"version"`
+		Id      string `json:"id,omitempty"`
+		Status  string `json:"status"`
+	}
+)
+
+
+func processTransPost(data []byte) ([]byte, error) {
+	tx:=&Transaction{}
+	err := json.Unmarshal(data, tx)
+	if err != nil {
+		log.Printf("json.Unmarshal %v", err)
+		return nil, err
+	}
+	log.Printf("tx:%v",tx)
+	return []byte(`{"status":"ok"}`), nil
+}
+
+func processTransVerify(data []byte) ([]byte, error) {
+	return nil, errors.New("processTransVerify not implemented")
+}
+
+func processHeartBeat(data []byte) ([]byte, error) {
+	return nil, errors.New("processHeartBeat not implemented")
+}
+
+func processRemote(data []byte) ([]byte, error) {
+	req := &RemoteRequest{}
+	err := json.Unmarshal(data, req)
+	if err != nil {
+		log.Printf("json.Unmarshal %v", err)
+		return nil, err
+	}
+	switch req.Method {
+	case "transpost":
+		return processTransPost(req.Params)
+	case "transverify":
+		return processTransVerify(req.Params)
+	case "heartbeat":
+		return processHeartBeat(req.Params)
+	}
+
+	return nil, errors.New(fmt.Sprintf("unknown method %s", req.Method))
+}
+
+func main() {
+
+	bin, err := processRemote([]byte(transpostJSON))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf(string(bin))
+}
+```
 
 ## #65 - grpc
 > 2017-01-26 by [@beyondns](https://github.com/beyondns)
