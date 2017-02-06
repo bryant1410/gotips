@@ -12,6 +12,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 # Tips list
 
 
+- 67 - [microservices](https://github.com/beyondns/gotips#67---microservices)
 - 66 - [json rpc over any transport](https://github.com/beyondns/gotips#66---json-rpc-over-any-transport)
 - 65 - [grpc](https://github.com/beyondns/gotips#65---grpc)
 - 64 - [go vs rust](https://github.com/beyondns/gotips#64---go-vs-rust)
@@ -80,7 +81,14 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
-## #65 - json rpc over any transport
+## #67 - microservices
+> 2017-01-31 by [@beyondns](https://github.com/beyondns)
+
+* [gokit](https://gokit.io/)
+* [GOTO 2016 Microservices in Go](https://www.youtube.com/watch?v=WiCru2zIWWs)
+
+
+## #66 - json rpc over any transport
 > 2017-01-31 by [@beyondns](https://github.com/beyondns)
 
 ```go
