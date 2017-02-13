@@ -84,6 +84,8 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 ## #67 - microservices
 > 2017-01-31 by [@beyondns](https://github.com/beyondns)
 
+It's an approach to handle complexity
+
 * [gokit](https://gokit.io/)
 * [GOTO 2016 Microservices in Go](https://www.youtube.com/watch?v=WiCru2zIWWs)
 
