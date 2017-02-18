@@ -11,7 +11,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 # Tips list
 
-
+- 68 - [go1.8 features](https://github.com/beyondns/gotips#68---go1.8 features)
 - 67 - [microservices](https://github.com/beyondns/gotips#67---microservices)
 - 66 - [json rpc over any transport](https://github.com/beyondns/gotips#66---json-rpc-over-any-transport)
 - 65 - [grpc](https://github.com/beyondns/gotips#65---grpc)
@@ -80,6 +80,70 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+## #68 - go1.8 features
+> 2017-02-17 by [@beyondns](https://github.com/beyondns)
+
+```go
+package main
+
+import (
+	"log"
+	"io"
+	"os"
+	"os/signal"
+	"net/http"
+	"context"
+	"golang.org/x/net/http2"
+)
+
+type handl struct{}
+
+func (*handl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "Hello")
+}
+func main() {
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+
+	srv := &http.Server{Addr: ":8080", Handler: &handl{}}
+
+	go func() {
+		<-quit
+		err := srv.Shutdown(context.Background())
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	http2.ConfigureServer(srv, nil)
+
+// openssl req -x509 -newkey rsa:2048 -nodes -keyout srv.key -out srv.cert -days 365
+	err := srv.ListenAndServeTLS("srv.cert", "srv.key")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+```
+
+```js
+var http2 = require('http2');
+
+http2.globalAgent = new http2.Agent({
+  rejectUnauthorized: false
+});
+
+var request = http2.get('https://localhost:8080/');
+
+request.on('response', function(response) {
+  response.pipe(process.stdout);
+});
+
+```
+
+* [go1.8](https://golang.org/doc/go1.8)
 
 ## #67 - microservices
 > 2017-01-31 by [@beyondns](https://github.com/beyondns)
