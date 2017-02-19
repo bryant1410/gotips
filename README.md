@@ -100,7 +100,11 @@ import (
 type handl struct{}
 
 func (*handl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Printf("%v",r.URL)
 	io.WriteString(w, "Hello")
+		if p, ok := w.(http.Pusher); ok {
+			p.Push("/static/1.jpg", nil)
+		}	
 }
 func main() {
 	quit := make(chan os.Signal)
@@ -139,6 +143,13 @@ var request = http2.get('https://localhost:8080/');
 
 request.on('response', function(response) {
   response.pipe(process.stdout);
+});
+
+request.on('push', function(pushRequest) {
+  console.log('Receiving pushed resource: ' + pushRequest.url);
+  pushRequest.on('response', function(pushResponse) {
+    console.log('Receiving pushed response: ' + pushResponse);
+  });
 });
 
 ```
