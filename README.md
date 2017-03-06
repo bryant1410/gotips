@@ -11,7 +11,8 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 # Tips list
 
-- 68 - [go1.8 features](https://github.com/beyondns/gotips#68---go1.8 features)
+- 69 - [modern sql](https://github.com/beyondns/gotips#69---modern-sql)
+- 68 - [go1.8 features](https://github.com/beyondns/gotips#68---go1.8-features)
 - 67 - [microservices](https://github.com/beyondns/gotips#67---microservices)
 - 66 - [json rpc over any transport](https://github.com/beyondns/gotips#66---json-rpc-over-any-transport)
 - 65 - [grpc](https://github.com/beyondns/gotips#65---grpc)
@@ -81,6 +82,12 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
 
+## #69 - modern sql
+> 2017-03-06 by [@beyondns](https://github.com/beyondns)
+
+* [How Modern SQL Databases Come up with Algorithms that You Would Have Never Dreamed Of by Lukas Eder](https://www.youtube.com/watch?v=wTPGW1PNy_Y)
+
+
 ## #68 - go1.8 features
 > 2017-02-17 by [@beyondns](https://github.com/beyondns)
 
@@ -133,6 +140,7 @@ func main() {
 ```
 
 ```js
+// js client
 var http2 = require('http2');
 
 http2.globalAgent = new http2.Agent({
@@ -148,7 +156,7 @@ request.on('response', function(response) {
 request.on('push', function(pushRequest) {
   console.log('Receiving pushed resource: ' + pushRequest.url);
   pushRequest.on('response', function(pushResponse) {
-    console.log('Receiving pushed response: ' + pushResponse);
+    console.dir('Receiving pushed response: ' + pushResponse);
   });
 });
 
