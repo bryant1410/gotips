@@ -90,12 +90,13 @@ Distributed protocol can be divided into two parts:
 1) Serve incommin' requests (passive)  
 2) Make outgoin' requests (active)
 
-* [raft](https://raft.github.io)
-
+* [An open protocol for decentralized exchange on the Ethereum blockchain](https://www.0xproject.com/whitepaper/0x_white_paper.pdf)
 * [bitcoin](https://en.bitcoin.it/wiki/Protocol_documentation)
 * [ethereum](https://github.com/search?o=desc&q=org%3Aethereum+protocol&s=updated&type=Wikis)
 * [graphene](https://github.com/cryptonomex/graphene/blob/master/libraries/p2p/design.md)
 * [chain](https://chain.com/docs/protocol/papers/whitepaper)
+
+* [raft](https://raft.github.io)
 
 ## #69 - sql more productive
 > 2017-03-06 by [@beyondns](https://github.com/beyondns)
