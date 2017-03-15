@@ -11,6 +11,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 
 # Tips list
 
+- 70 - [distributed protocols](https://github.com/beyondns/gotips#70---distributed-protocols)
 - 69 - [sql more productive](https://github.com/beyondns/gotips#69---sql-more-productive)
 - 68 - [go1.8 features](https://github.com/beyondns/gotips#68---go1.8-features)
 - 67 - [microservices](https://github.com/beyondns/gotips#67---microservices)
@@ -81,6 +82,20 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 -  2 - [Import packages](https://github.com/beyondns/gotips/blob/master/tips32.md#2---import-packages)
 -  1 - [Map](https://github.com/beyondns/gotips/blob/master/tips32.md#1---map)
 -  0 - [Slices](https://github.com/beyondns/gotips/blob/master/tips32.md#0---slices)
+
+## #70 - distributed protocols
+> 2017-03-15 by [@beyondns](https://github.com/beyondns)
+
+Distributed protocol can be divided into two parts:  
+1) Serve incommin' requests (passive)  
+2) Make outgoin' requests (active)
+
+* [raft](https://raft.github.io)
+
+* [bitcoin](https://en.bitcoin.it/wiki/Protocol_documentation)
+* [ethereum](https://github.com/search?o=desc&q=org%3Aethereum+protocol&s=updated&type=Wikis)
+* [graphene](https://github.com/cryptonomex/graphene/blob/master/libraries/p2p/design.md)
+* [chain](https://chain.com/docs/protocol/papers/whitepaper)
 
 ## #69 - sql more productive
 > 2017-03-06 by [@beyondns](https://github.com/beyondns)
