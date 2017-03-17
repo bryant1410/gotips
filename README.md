@@ -86,7 +86,7 @@ Send some ether 0x30FD8822D15081F3c98e6A37264F8dF37a2EB416
 ## #70 - distributed protocols
 > 2017-03-15 by [@beyondns](https://github.com/beyondns)
 
-Distributed protocol can be divided into two parts: Serve incommin' requests (passive), Make outgoin' requests (active)
+Distributed protocol can be divided into two parts: serve incommin' requests (passive), make outgoin' requests (active)
 
 * [An open protocol for decentralized exchange on the Ethereum blockchain](https://www.0xproject.com/whitepaper/0x_white_paper.pdf)
 * [bitcoin](https://en.bitcoin.it/wiki/Protocol_documentation)
