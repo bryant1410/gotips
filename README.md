@@ -94,7 +94,7 @@ Distributed protocol can be divided into two parts: serve incommin' requests (pa
 * [graphene](https://github.com/cryptonomex/graphene/blob/master/libraries/p2p/design.md)
 * [chain](https://chain.com/docs/protocol/papers/whitepaper)
 * [raft](https://raft.github.io)
-
+* [zcash](https://github.com/zcash/zips/blob/master/protocol/protocol.pdf)
 ## #69 - sql more productive
 > 2017-03-06 by [@beyondns](https://github.com/beyondns)
 
