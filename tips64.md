@@ -618,7 +618,7 @@ export LD_LIBRARY_PATH=/usr/local/lib
 /*
 #include "secp256k1.h"
 
-#cgo LDFLAGS: -lsecp256k1
+# cgo LDFLAGS: -lsecp256k1
 */
 import "C"
 import "unsafe"
@@ -1127,7 +1127,7 @@ package main
 /*
 #include <stdlib.h>
 #include <openssl/sha.h>    
-#cgo LDFLAGS: -lcrypto
+# cgo LDFLAGS: -lcrypto
 */
 import "C"
 import (
